@@ -40,3 +40,4 @@ A complete full-stack web application for pet care, marketplace, and vet appoint
 - **Login**: Use your credentials to access the Dashboard.
 - **Marketplace**: Go to `/market` to browse or `/create-listing` to sell.
 - **Vets**: Go to `/vets` to see available doctors.
+# PetCarePlanet
