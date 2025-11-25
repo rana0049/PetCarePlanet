@@ -53,50 +53,50 @@ const Dashboard = () => {
         }
     };
 
-    if (!user) return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center text-gray-800">Please log in.</div>;
+    if (!user) return <div className="min-h-screen bg-secondary-50 flex items-center justify-center text-neutral-800">Please log in.</div>;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12">
+        <div className="min-h-screen bg-secondary-50 py-12">
             <div className="container mx-auto px-4">
                 <div className="mb-8">
-                    <h1 className="text-5xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-2">
-                        Welcome back, {user.name}! 👋
+                    <h1 className="text-4xl font-display font-bold text-neutral-900 mb-2">
+                        Welcome back, <span className="text-primary-600">{user.name}</span>!
                     </h1>
-                    <p className="text-xl text-gray-600">Manage your pets and appointments</p>
+                    <p className="text-lg text-neutral-600">Manage your pets and appointments</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Pets Section */}
                     {user.role === 'pet_owner' && (
-                        <div className="bg-white p-8 rounded-3xl shadow-xl border-2 border-purple-100">
+                        <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-3xl font-display font-bold text-gray-800 flex items-center gap-2">
-                                    <FaPaw className="text-purple-500" />
+                                <h2 className="text-2xl font-display font-bold text-neutral-900 flex items-center gap-2">
+                                    <FaPaw className="text-primary-500" />
                                     My Pets
                                 </h2>
                                 <button
                                     onClick={() => setShowAddPet(true)}
-                                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                                    className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                                 >
                                     <FaPlus /> Add Pet
                                 </button>
                             </div>
                             {pets.length === 0 ? (
-                                <div className="text-center py-12 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl">
-                                    <FaPaw className="text-6xl text-purple-300 mx-auto mb-4" />
-                                    <p className="text-gray-500 text-lg">No pets added yet. Add your first pet!</p>
+                                <div className="text-center py-12 bg-secondary-50 rounded-2xl border border-secondary-200">
+                                    <FaPaw className="text-6xl text-secondary-300 mx-auto mb-4" />
+                                    <p className="text-neutral-500 text-lg">No pets added yet. Add your first pet!</p>
                                 </div>
                             ) : (
                                 <ul className="space-y-4">
                                     {pets.map((pet) => (
-                                        <li key={pet._id} className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-purple-200 p-5 rounded-2xl flex justify-between items-center hover:shadow-lg transition-all">
+                                        <li key={pet._id} className="bg-secondary-50 border border-secondary-200 p-5 rounded-2xl flex justify-between items-center hover:shadow-md transition-all">
                                             <div>
-                                                <h3 className="font-bold text-gray-800 text-xl">{pet.name}</h3>
-                                                <p className="text-gray-600">{pet.type} • {pet.breed}</p>
+                                                <h3 className="font-bold text-neutral-900 text-xl">{pet.name}</h3>
+                                                <p className="text-neutral-600">{pet.type} • {pet.breed}</p>
                                             </div>
                                             <Link
                                                 to={`/pets/${pet._id}`}
-                                                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                                                className="px-4 py-2 bg-white border border-secondary-200 text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-all"
                                             >
                                                 View Health →
                                             </Link>
@@ -108,31 +108,31 @@ const Dashboard = () => {
                     )}
 
                     {/* Appointments Section */}
-                    <div className="bg-white p-8 rounded-3xl shadow-xl border-2 border-blue-100">
-                        <h2 className="text-3xl font-display font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <FaCalendar className="text-blue-500" />
+                    <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
+                        <h2 className="text-2xl font-display font-bold text-neutral-900 mb-6 flex items-center gap-2">
+                            <FaCalendar className="text-accent-500" />
                             Appointments
                         </h2>
                         {appointments.length === 0 ? (
-                            <div className="text-center py-12 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl">
-                                <FaCalendar className="text-6xl text-blue-300 mx-auto mb-4" />
-                                <p className="text-gray-500 text-lg">No appointments scheduled.</p>
+                            <div className="text-center py-12 bg-secondary-50 rounded-2xl border border-secondary-200">
+                                <FaCalendar className="text-6xl text-secondary-300 mx-auto mb-4" />
+                                <p className="text-neutral-500 text-lg">No appointments scheduled.</p>
                             </div>
                         ) : (
                             <ul className="space-y-4">
                                 {appointments.map((appt) => (
-                                    <li key={appt._id} className="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 p-5 rounded-2xl">
+                                    <li key={appt._id} className="bg-secondary-50 border border-secondary-200 p-5 rounded-2xl">
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className="font-bold text-gray-800 text-lg">{new Date(appt.date).toLocaleDateString()}</span>
+                                            <span className="font-bold text-neutral-900 text-lg">{new Date(appt.date).toLocaleDateString()}</span>
                                             <span className={`px-4 py-1 rounded-full text-sm font-bold ${appt.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                                                 }`}>
                                                 {appt.status}
                                             </span>
                                         </div>
-                                        <p className="text-gray-700 font-medium">
+                                        <p className="text-neutral-700 font-medium">
                                             {user.role === 'pet_owner' ? `Vet: ${appt.vet?.name || 'Unknown'}` : `Pet: ${appt.pet?.name || 'Unknown'}`}
                                         </p>
-                                        <p className="text-gray-500">{appt.timeSlot}</p>
+                                        <p className="text-neutral-500">{appt.timeSlot}</p>
                                     </li>
                                 ))}
                             </ul>
@@ -143,31 +143,31 @@ const Dashboard = () => {
 
             {/* Add Pet Modal */}
             {showAddPet && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border-2 border-purple-200">
+                <div className="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-secondary-100">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-3xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Add New Pet</h3>
-                            <button onClick={() => setShowAddPet(false)} className="text-gray-400 hover:text-gray-600">
+                            <h3 className="text-2xl font-display font-bold text-neutral-900">Add New Pet</h3>
+                            <button onClick={() => setShowAddPet(false)} className="text-neutral-400 hover:text-neutral-600">
                                 <FaTimes size={24} />
                             </button>
                         </div>
                         <form onSubmit={handleAddPet} className="space-y-4">
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-2">Pet Name</label>
+                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Pet Name</label>
                                 <input
                                     type="text"
                                     value={newPet.name}
                                     onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 p-3 rounded-xl focus:outline-none focus:border-purple-500"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-2">Type</label>
+                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Type</label>
                                 <select
                                     value={newPet.type}
                                     onChange={(e) => setNewPet({ ...newPet, type: e.target.value })}
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 p-3 rounded-xl focus:outline-none focus:border-purple-500"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                 >
                                     <option>Dog</option>
                                     <option>Cat</option>
@@ -175,29 +175,29 @@ const Dashboard = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-2">Breed</label>
+                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Breed</label>
                                 <input
                                     type="text"
                                     value={newPet.breed}
                                     onChange={(e) => setNewPet({ ...newPet, breed: e.target.value })}
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 p-3 rounded-xl focus:outline-none focus:border-purple-500"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-2">Age (years)</label>
+                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Age (years)</label>
                                 <input
                                     type="number"
                                     value={newPet.age}
                                     onChange={(e) => setNewPet({ ...newPet, age: e.target.value })}
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 p-3 rounded-xl focus:outline-none focus:border-purple-500"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-2">Gender</label>
+                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Gender</label>
                                 <select
                                     value={newPet.gender}
                                     onChange={(e) => setNewPet({ ...newPet, gender: e.target.value })}
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 p-3 rounded-xl focus:outline-none focus:border-purple-500"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                 >
                                     <option>Male</option>
                                     <option>Female</option>
@@ -205,7 +205,7 @@ const Dashboard = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                                className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
                             >
                                 Add Pet
                             </button>

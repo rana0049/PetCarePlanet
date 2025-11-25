@@ -14,14 +14,14 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-white shadow-lg sticky top-0 z-50 border-b-4 border-gradient-to-r from-blue-500 to-purple-500">
-            <div className="container mx-auto px-4 py-4">
+        <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-secondary-200">
+            <div className="container mx-auto px-4 py-3">
                 <div className="flex justify-between items-center">
                     <Link to="/" className="flex items-center space-x-3 group">
-                        <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl group-hover:scale-110 transition-transform shadow-lg">
-                            <FaPaw className="text-2xl text-white" />
+                        <div className="p-2 bg-primary-50 rounded-xl group-hover:bg-primary-100 transition-colors">
+                            <FaPaw className="text-2xl text-primary-600" />
                         </div>
-                        <span className="text-2xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                        <span className="text-xl font-display font-bold text-neutral-800 tracking-tight">
                             PetCarePlanet
                         </span>
                     </Link>
@@ -36,24 +36,24 @@ const Navbar = () => {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all"
+                                    className="flex items-center space-x-2 px-4 py-2 bg-secondary-50 hover:bg-secondary-100 text-neutral-700 rounded-full transition-all border border-secondary-200"
                                 >
-                                    <FaUserCircle className="text-xl" />
-                                    <span className="font-medium">{user.name}</span>
-                                    <FaChevronDown className="text-sm" />
+                                    <FaUserCircle className="text-xl text-primary-500" />
+                                    <span className="font-medium text-sm">{user.name}</span>
+                                    <FaChevronDown className={`text-xs transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
                                 </button>
                                 {showDropdown && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-white border-2 border-purple-200 rounded-xl shadow-xl overflow-hidden">
+                                    <div className="absolute right-0 mt-2 w-56 bg-white border border-secondary-100 rounded-xl shadow-card-hover overflow-hidden animate-fade-in">
                                         <Link
                                             to="/dashboard"
-                                            className="block px-4 py-3 text-gray-700 hover:bg-purple-50 transition-colors font-medium"
+                                            className="block px-4 py-3 text-neutral-700 hover:bg-secondary-50 transition-colors font-medium text-sm"
                                             onClick={() => setShowDropdown(false)}
                                         >
                                             Dashboard
                                         </Link>
                                         <button
                                             onClick={() => { handleLogout(); setShowDropdown(false); }}
-                                            className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium"
+                                            className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
                                         >
                                             Logout
                                         </button>
@@ -64,13 +64,13 @@ const Navbar = () => {
                             <div className="flex items-center space-x-4">
                                 <Link
                                     to="/login"
-                                    className="text-gray-700 hover:text-purple-600 font-semibold transition-colors"
+                                    className="text-neutral-600 hover:text-primary-600 font-medium transition-colors text-sm"
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     to="/register"
-                                    className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                                    className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all text-sm"
                                 >
                                     Get Started
                                 </Link>
@@ -86,10 +86,10 @@ const Navbar = () => {
 const NavLink = ({ to, children }) => (
     <Link
         to={to}
-        className="text-gray-700 hover:text-purple-600 font-semibold transition-colors relative group"
+        className="text-neutral-600 hover:text-primary-600 font-medium transition-colors text-sm relative group"
     >
         {children}
-        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300 rounded-full"></span>
     </Link>
 );
 

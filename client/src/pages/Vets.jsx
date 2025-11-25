@@ -70,43 +70,43 @@ const Vets = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12">
+        <div className="min-h-screen bg-secondary-50 py-12">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+                    <h1 className="text-4xl md:text-5xl font-display font-bold text-neutral-900 mb-4">
                         Find Expert Veterinarians
                     </h1>
-                    <p className="text-xl text-gray-600">Book appointments with certified professionals</p>
+                    <p className="text-xl text-neutral-600">Book appointments with certified professionals</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {vets.map((vet) => (
                         <div
                             key={vet.id}
-                            className="bg-white border border-gray-100 p-6 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                            className="bg-white border border-secondary-100 p-6 rounded-3xl shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 group"
                         >
                             <div className="flex items-center space-x-4 mb-6">
-                                <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">
-                                    <FaStethoscope className="text-blue-600" />
+                                <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">
+                                    <FaStethoscope className="text-primary-600" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-800">{vet.name}</h3>
-                                    <p className="text-purple-600 font-medium text-sm">{vet.specialization}</p>
+                                    <h3 className="text-lg font-bold text-neutral-900">{vet.name}</h3>
+                                    <p className="text-primary-600 font-medium text-sm">{vet.specialization}</p>
                                 </div>
                             </div>
                             <div className="space-y-3 mb-6">
-                                <p className="text-gray-600 flex items-center gap-3 text-sm">
-                                    <FaMapMarkerAlt className="text-gray-400 text-lg" />
+                                <p className="text-neutral-600 flex items-center gap-3 text-sm">
+                                    <FaMapMarkerAlt className="text-neutral-400 text-lg" />
                                     {vet.clinic}
                                 </p>
-                                <p className="text-gray-600 flex items-center gap-3 text-sm">
-                                    <FaGraduationCap className="text-gray-400 text-lg" />
+                                <p className="text-neutral-600 flex items-center gap-3 text-sm">
+                                    <FaGraduationCap className="text-neutral-400 text-lg" />
                                     {vet.experience} Years Experience
                                 </p>
                             </div>
                             <button
                                 onClick={() => handleBookAppointment(vet)}
-                                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                                className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
                             >
                                 Book Appointment
                             </button>
@@ -117,16 +117,16 @@ const Vets = () => {
 
             {/* Booking Modal */}
             {showBooking && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl animate-fadeIn">
-                        <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                <div className="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl animate-fadeIn border border-secondary-100">
+                        <div className="flex justify-between items-center mb-8 border-b border-secondary-100 pb-4">
                             <div>
-                                <h3 className="text-2xl font-display font-bold text-gray-800">Book Appointment</h3>
-                                <p className="text-gray-500 text-sm mt-1">Schedule a visit with {selectedVet?.name}</p>
+                                <h3 className="text-2xl font-display font-bold text-neutral-900">Book Appointment</h3>
+                                <p className="text-neutral-500 text-sm mt-1">Schedule a visit with {selectedVet?.name}</p>
                             </div>
                             <button
                                 onClick={() => setShowBooking(false)}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                                className="p-2 hover:bg-secondary-100 rounded-full transition-colors text-neutral-400 hover:text-neutral-600"
                             >
                                 <FaTimes size={20} />
                             </button>
@@ -135,13 +135,13 @@ const Vets = () => {
                         <form onSubmit={handleSubmitBooking} className="space-y-6">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-gray-700 font-semibold mb-2 text-sm">Select Pet</label>
+                                    <label className="block text-neutral-700 font-semibold mb-2 text-sm">Select Pet</label>
                                     <div className="relative">
-                                        <FaPaw className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                        <FaPaw className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                                         <select
                                             value={booking.petId}
                                             onChange={(e) => setBooking({ ...booking, petId: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-200 text-gray-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all appearance-none"
+                                            className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
                                             required
                                         >
                                             <option value="">Choose a pet...</option>
@@ -154,27 +154,27 @@ const Vets = () => {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-gray-700 font-semibold mb-2 text-sm">Date</label>
+                                        <label className="block text-neutral-700 font-semibold mb-2 text-sm">Date</label>
                                         <div className="relative">
-                                            <FaCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                            <FaCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                                             <input
                                                 type="date"
                                                 value={booking.date}
                                                 onChange={(e) => setBooking({ ...booking, date: e.target.value })}
                                                 min={new Date().toISOString().split('T')[0]}
-                                                className="w-full bg-gray-50 border border-gray-200 text-gray-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
+                                                className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                                 required
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-gray-700 font-semibold mb-2 text-sm">Time</label>
+                                        <label className="block text-neutral-700 font-semibold mb-2 text-sm">Time</label>
                                         <div className="relative">
-                                            <FaClock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                            <FaClock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                                             <select
                                                 value={booking.timeSlot}
                                                 onChange={(e) => setBooking({ ...booking, timeSlot: e.target.value })}
-                                                className="w-full bg-gray-50 border border-gray-200 text-gray-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all appearance-none"
+                                                className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
                                             >
                                                 <option>10:00 AM - 11:00 AM</option>
                                                 <option>11:00 AM - 12:00 PM</option>
@@ -187,12 +187,12 @@ const Vets = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-gray-700 font-semibold mb-2 text-sm">Reason for Visit</label>
+                                    <label className="block text-neutral-700 font-semibold mb-2 text-sm">Reason for Visit</label>
                                     <textarea
                                         value={booking.reason}
                                         onChange={(e) => setBooking({ ...booking, reason: e.target.value })}
                                         placeholder="Briefly describe the issue..."
-                                        className="w-full bg-gray-50 border border-gray-200 text-gray-800 p-4 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all resize-none"
+                                        className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-4 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-none"
                                         rows="3"
                                     ></textarea>
                                 </div>
@@ -201,7 +201,7 @@ const Vets = () => {
                             <div className="pt-2">
                                 <button
                                     type="submit"
-                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                                    className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
                                 >
                                     Confirm Booking
                                 </button>

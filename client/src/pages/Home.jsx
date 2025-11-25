@@ -1,159 +1,235 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaHeart, FaStethoscope, FaShoppingCart, FaArrowRight, FaStar, FaPaw, FaUserMd, FaShoppingBag, FaFileMedical } from 'react-icons/fa';
+import { FaPaw, FaHeart, FaStethoscope, FaShoppingCart, FaArrowRight, FaQuoteLeft, FaCheckCircle } from 'react-icons/fa';
+import heroImage from '../assets/hero-pets.png';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
+    const { user } = useAuth();
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <div className="min-h-screen bg-secondary-50 font-sans text-neutral-800">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 py-24">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-                <div className="container mx-auto px-4 relative z-10">
+            <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-secondary-100">
+                {/* Background Image with Overlay */}
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src={heroImage}
+                        alt="Happy pets in nature"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-secondary-50/90 via-secondary-50/70 to-transparent"></div>
+                </div>
+
+                <div className="container mx-auto px-4 relative z-10 pt-20">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="text-center max-w-4xl mx-auto"
+                        className="max-w-2xl"
                     >
-                        <div className="inline-block mb-6">
-                            <span className="px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-semibold text-sm border border-white/30 flex items-center gap-2 mx-auto w-fit">
-                                <FaPaw className="text-yellow-300" /> Pakistan's #1 Pet Care Platform
-                            </span>
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-primary-700 font-semibold text-sm shadow-sm mb-6">
+                            <FaPaw className="text-primary-500" />
+                            <span>Where Pets are Family</span>
                         </div>
-                        <h1 className="text-6xl md:text-7xl font-display font-bold text-white mb-6 leading-tight">
-                            Your Pet's Health &
-                            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-400">
-                                Happiness Matters
-                            </span>
+
+                        <h1 className="text-5xl md:text-7xl font-display font-bold text-neutral-900 mb-6 leading-tight">
+                            Find Your Perfect <br />
+                            <span className="text-primary-600">Companion</span> Today
                         </h1>
-                        <p className="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed">
-                            Complete pet care solution with health tracking, premium marketplace, and expert veterinarians
+
+                        <p className="text-xl text-neutral-600 mb-10 leading-relaxed max-w-lg">
+                            The most trusted marketplace for buying and selling pets. Connect with responsible breeders and loving families.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            {user ? (
+                                <Link
+                                    to="/dashboard"
+                                    className="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                                >
+                                    Go to Dashboard
+                                    <FaArrowRight />
+                                </Link>
+                            ) : (
+                                <Link
+                                    to="/register"
+                                    className="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                                >
+                                    Join Our Family
+                                    <FaArrowRight />
+                                </Link>
+                            )}
+
                             <Link
                                 to="/market"
-                                className="group px-8 py-4 bg-white text-purple-600 rounded-2xl font-bold text-lg shadow-glow hover:shadow-glow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                                className="px-8 py-4 bg-white hover:bg-secondary-50 text-neutral-700 border border-secondary-200 rounded-full font-semibold text-lg shadow-sm hover:shadow-md transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                             >
-                                <FaShoppingCart />
-                                Explore Marketplace
-                                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                            <Link
-                                to="/vets"
-                                className="px-8 py-4 bg-gradient-to-r from-orange-400 to-pink-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
-                            >
-                                <FaStethoscope />
-                                Book Vet Now
+                                <FaPaw className="text-primary-500" />
+                                Find a Pet
                             </Link>
                         </div>
                     </motion.div>
                 </div>
-
-                {/* Decorative Elements */}
-                <div className="absolute -top-24 -left-24 w-96 h-96 bg-yellow-300/30 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-pink-300/30 rounded-full blur-3xl"></div>
             </section>
 
-            {/* Features Section */}
-            <section className="py-24">
+            {/* Features Section - "Everything They Need" */}
+            <section className="py-24 bg-white">
                 <div className="container mx-auto px-4">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        transition={{ duration: 0.6 }}
-                        className="text-center mb-16"
-                    >
-                        <h2 className="text-5xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
-                            Everything Your Pet Needs
+                    <div className="text-center max-w-3xl mx-auto mb-16">
+                        <h2 className="text-4xl font-display font-bold text-neutral-900 mb-4">
+                            More Than Just a Marketplace
                         </h2>
-                        <p className="text-xl text-gray-600">Comprehensive care in one beautiful platform</p>
-                    </motion.div>
+                        <p className="text-lg text-neutral-500">
+                            We ensure a safe and loving journey for every pet, from finding a home to lifelong care.
+                        </p>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <FeatureCard
-                            gradient="from-blue-500 to-cyan-500"
-                            icon={<FaHeart className="text-5xl" />}
-                            title="Health Monitoring"
-                            desc="Track vaccinations, weight, and medical history with smart reminders and insights."
+                            icon={<FaShoppingCart className="text-4xl text-secondary-600" />}
+                            title="Buy & Sell Pets"
+                            desc="A secure platform to connect with verified sellers and find your new best friend."
                             delay={0.1}
                         />
                         <FeatureCard
-                            gradient="from-purple-500 to-pink-500"
-                            icon={<FaShoppingCart className="text-5xl" />}
-                            title="Premium Marketplace"
-                            desc="Buy and sell pets through our verified, secure platform with buyer protection."
+                            icon={<FaStethoscope className="text-4xl text-primary-500" />}
+                            title="Expert Vets"
+                            desc="Connect with certified veterinarians for health checks and advice for your new pet."
                             delay={0.2}
                         />
                         <FeatureCard
-                            gradient="from-orange-500 to-red-500"
-                            icon={<FaStethoscope className="text-5xl" />}
-                            title="Expert Veterinarians"
-                            desc="Connect with certified vets, book appointments, and get professional care."
+                            icon={<FaHeart className="text-4xl text-accent-500" />}
+                            title="Health Monitoring"
+                            desc="Keep track of vaccinations and growth milestones as your pet grows."
                             delay={0.3}
                         />
                     </div>
                 </div>
             </section>
 
-            {/* Stats Section */}
-            <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+            {/* How It Works Section */}
+            <section className="py-24 bg-secondary-50 relative overflow-hidden">
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-display font-bold text-neutral-900 mb-4">How It Works</h2>
+                        <p className="text-lg text-neutral-500">Simple steps to a happier pet</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        <StepCard
+                            number="01"
+                            title="Create a Profile"
+                            desc="Sign up to browse available pets or list your own for sale."
+                        />
+                        <StepCard
+                            number="02"
+                            title="Connect & Verify"
+                            desc="Chat with sellers, verify details, and ensure a safe transaction."
+                        />
+                        <StepCard
+                            number="03"
+                            title="Welcome Home"
+                            desc="Bring your new family member home and start your journey together."
+                        />
+                    </div>
+                </div>
+                {/* Decorative Blob */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-100/50 rounded-full blur-3xl -z-10"></div>
+            </section>
+
+            {/* Testimonials Section */}
+            <section className="py-24 bg-secondary-100">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                        <StatCard number="10K+" label="Happy Pets" icon={<FaPaw />} />
-                        <StatCard number="500+" label="Verified Vets" icon={<FaUserMd />} />
-                        <StatCard number="5K+" label="Successful Sales" icon={<FaShoppingBag />} />
-                        <StatCard number="50K+" label="Health Records" icon={<FaFileMedical />} />
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-display font-bold mb-4 text-neutral-900">Happy Tails</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <TestimonialCard
+                            quote="Found my dream Golden Retriever through PetCarePlanet. The process was so safe and easy!"
+                            author="Sarah & Max"
+                            role="Dog Mom"
+                        />
+                        <TestimonialCard
+                            quote="Selling my kittens to loving homes was my priority. This platform made it possible."
+                            author="Ahmed"
+                            role="Breeder"
+                        />
                     </div>
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="py-24 bg-gradient-to-br from-orange-100 to-pink-100">
+            <section className="py-24 bg-gradient-warm">
                 <div className="container mx-auto px-4 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2 className="text-5xl font-display font-bold text-gray-800 mb-6">
-                            Ready to Get Started?
+                    <div className="max-w-3xl mx-auto">
+                        <h2 className="text-4xl font-display font-bold text-neutral-900 mb-6">
+                            Ready to Find a Friend?
                         </h2>
-                        <p className="text-xl text-gray-600 mb-8">Join thousands of pet owners who trust PetCarePlanet</p>
-                        <Link
-                            to="/register"
-                            className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-bold text-xl shadow-glow hover:shadow-glow-lg transform hover:-translate-y-1 transition-all"
-                        >
-                            Create Free Account
-                            <FaStar className="animate-pulse" />
-                        </Link>
-                    </motion.div>
+                        <p className="text-xl text-neutral-600 mb-8">
+                            Thousands of pets are waiting for a loving home.
+                        </p>
+                        {user ? (
+                            <Link
+                                to="/market"
+                                className="inline-flex items-center gap-2 px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all"
+                            >
+                                View Marketplace
+                                <FaPaw />
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/register"
+                                className="inline-flex items-center gap-2 px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all"
+                            >
+                                Get Started for Free
+                                <FaPaw />
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </section>
         </div>
     );
 };
 
-const FeatureCard = ({ gradient, icon, title, desc, delay }) => (
+const FeatureCard = ({ icon, title, desc, delay }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay }}
-        whileHover={{ y: -8, scale: 1.02 }}
-        className="group relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-200"
+        whileHover={{ y: -5 }}
+        className="p-8 rounded-3xl bg-secondary-50 hover:bg-white border border-transparent hover:border-primary-100 shadow-sm hover:shadow-card-hover transition-all duration-300"
     >
-        <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-r ${gradient} text-white mb-6 shadow-lg`}>
+        <div className="mb-6 p-4 bg-white rounded-2xl w-fit shadow-sm text-primary-600">
             {icon}
         </div>
-        <h3 className="text-2xl font-display font-bold text-gray-800 mb-3">{title}</h3>
-        <p className="text-gray-600 leading-relaxed">{desc}</p>
+        <h3 className="text-xl font-display font-bold text-neutral-900 mb-3">{title}</h3>
+        <p className="text-neutral-500 leading-relaxed">{desc}</p>
     </motion.div>
 );
 
-const StatCard = ({ number, label, icon }) => (
-    <div className="text-white">
-        <div className="text-5xl mb-2 flex justify-center opacity-80">{icon}</div>
-        <div className="text-4xl md:text-5xl font-bold mb-2">{number}</div>
-        <div className="text-lg opacity-90 font-medium">{label}</div>
+const StepCard = ({ number, title, desc }) => (
+    <div className="relative p-8 text-center group">
+        <div className="text-6xl font-display font-bold text-primary-100 mb-4 group-hover:text-primary-200 transition-colors">{number}</div>
+        <h3 className="text-xl font-display font-bold text-neutral-900 mb-3">{title}</h3>
+        <p className="text-neutral-500 leading-relaxed">{desc}</p>
+    </div>
+);
+
+const TestimonialCard = ({ quote, author, role }) => (
+    <div className="p-8 rounded-3xl bg-white border border-secondary-200 shadow-card">
+        <FaQuoteLeft className="text-3xl text-primary-400 mb-6 opacity-50" />
+        <p className="text-lg text-neutral-600 mb-6 italic leading-relaxed">"{quote}"</p>
+        <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
+                {author[0]}
+            </div>
+            <div>
+                <div className="font-bold text-neutral-900">{author}</div>
+                <div className="text-sm text-neutral-500">{role}</div>
+            </div>
+        </div>
     </div>
 );
 

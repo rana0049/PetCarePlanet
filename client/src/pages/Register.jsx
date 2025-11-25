@@ -14,38 +14,51 @@ const Register = () => {
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await register(formData);
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err.message || 'Failed to register');
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center py-12 px-4 relative overflow-hidden">
+        <div className="min-h-screen bg-secondary-50 flex items-center justify-center py-12 px-4 relative overflow-hidden">
             {/* Decorative Elements */}
-            <div className="absolute top-10 left-10 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-10 left-10 w-96 h-96 bg-primary-100 rounded-full blur-3xl opacity-50"></div>
+            <div className="absolute bottom-10 right-10 w-80 h-80 bg-accent-100 rounded-full blur-3xl opacity-50"></div>
 
             <div className="max-w-md w-full relative z-10">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-semibold mb-4">
-                        <FaStar /> Join Us Today
+                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/50 backdrop-blur-md rounded-full text-primary-700 font-semibold mb-4 shadow-sm">
+                        <FaStar className="text-accent-500" /> Join Us Today
                     </div>
-                    <h2 className="text-5xl font-display font-bold text-white mb-2">Create Account</h2>
-                    <p className="text-white/90 text-lg">Start your pet care journey</p>
+                    <h2 className="text-4xl font-display font-bold text-neutral-900 mb-2">Create Account</h2>
+                    <p className="text-neutral-600 text-lg">Start your pet care journey</p>
                 </div>
 
-                <div className="bg-white p-8 rounded-3xl shadow-2xl border-2 border-white/50">
+                <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
                     {error && (
-                        <div className="bg-red-100 border-2 border-red-300 text-red-700 p-4 rounded-xl mb-6 font-semibold">
+                        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl mb-6 font-medium text-sm">
                             {error}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label className="block text-gray-700 font-bold mb-2">Full Name</label>
+                            <label className="block text-neutral-700 font-bold mb-2 text-sm">Full Name</label>
                             <div className="relative">
-                                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400" />
+                                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" />
                                 <input
                                     type="text"
                                     name="name"
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                     onChange={handleChange}
                                     placeholder="John Doe"
                                     required
@@ -54,13 +67,13 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label className="block text-gray-700 font-bold mb-2">Email Address</label>
+                            <label className="block text-neutral-700 font-bold mb-2 text-sm">Email Address</label>
                             <div className="relative">
-                                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400" />
+                                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" />
                                 <input
                                     type="email"
                                     name="email"
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                     onChange={handleChange}
                                     placeholder="you@example.com"
                                     required
@@ -69,13 +82,13 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label className="block text-gray-700 font-bold mb-2">Password</label>
+                            <label className="block text-neutral-700 font-bold mb-2 text-sm">Password</label>
                             <div className="relative">
-                                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400" />
+                                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" />
                                 <input
                                     type="password"
                                     name="password"
-                                    className="w-full bg-gray-50 border-2 border-purple-200 text-gray-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                     onChange={handleChange}
                                     placeholder="••••••••"
                                     required
@@ -84,44 +97,44 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label className="block text-gray-700 font-bold mb-3">I am a...</label>
+                            <label className="block text-neutral-700 font-bold mb-3 text-sm">I am a...</label>
                             <div className="grid grid-cols-2 gap-4">
                                 <button
                                     type="button"
                                     onClick={() => setFormData({ ...formData, role: 'pet_owner' })}
-                                    className={`p-5 rounded-2xl border-3 transition-all ${formData.role === 'pet_owner'
-                                        ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg'
-                                        : 'border-gray-200 bg-gray-50 hover:border-purple-300'
+                                    className={`p-4 rounded-2xl border-2 transition-all ${formData.role === 'pet_owner'
+                                        ? 'border-primary-500 bg-primary-50 text-primary-700'
+                                        : 'border-secondary-200 bg-white hover:border-primary-200 text-neutral-600'
                                         }`}
                                 >
-                                    <FaPaw className="text-4xl mx-auto mb-2 text-purple-500" />
-                                    <span className="block text-gray-800 font-bold">Pet Owner</span>
+                                    <FaPaw className={`text-3xl mx-auto mb-2 ${formData.role === 'pet_owner' ? 'text-primary-600' : 'text-neutral-400'}`} />
+                                    <span className="block font-bold text-sm">Pet Owner</span>
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setFormData({ ...formData, role: 'vet' })}
-                                    className={`p-5 rounded-2xl border-3 transition-all ${formData.role === 'vet'
-                                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg'
-                                        : 'border-gray-200 bg-gray-50 hover:border-blue-300'
+                                    className={`p-4 rounded-2xl border-2 transition-all ${formData.role === 'vet'
+                                        ? 'border-accent-500 bg-accent-50 text-accent-700'
+                                        : 'border-secondary-200 bg-white hover:border-accent-200 text-neutral-600'
                                         }`}
                                 >
-                                    <FaUserMd className="text-4xl mx-auto mb-2 text-blue-500" />
-                                    <span className="block text-gray-800 font-bold">Veterinarian</span>
+                                    <FaUserMd className={`text-3xl mx-auto mb-2 ${formData.role === 'vet' ? 'text-accent-500' : 'text-neutral-400'}`} />
+                                    <span className="block font-bold text-sm">Veterinarian</span>
                                 </button>
                             </div>
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                            className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                         >
                             Create Account
                         </button>
                     </form>
 
-                    <p className="mt-6 text-center text-gray-600">
+                    <p className="mt-6 text-center text-neutral-600">
                         Already have an account?{' '}
-                        <Link to="/login" className="text-purple-600 hover:text-purple-700 font-bold">
+                        <Link to="/login" className="text-primary-600 hover:text-primary-700 font-bold">
                             Sign in
                         </Link>
                     </p>
