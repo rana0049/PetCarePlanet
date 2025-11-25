@@ -40,6 +40,7 @@ app.use('/api/market', require('./routes/listingRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 app.get('/', (req, res) => {
     res.send('PetCarePlenet API is running...');

@@ -28,6 +28,10 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: function () { return this.role !== 'vet'; } // Vets need approval
     },
+    isBanned: {
+        type: Boolean,
+        default: false,
+    },
 }, {
     timestamps: true,
 });

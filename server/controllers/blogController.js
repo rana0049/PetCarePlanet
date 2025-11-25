@@ -59,6 +59,31 @@ const getBlogPostById = async (req, res) => {
     }
 };
 
+// @desc    Update blog post (Admin only)
+// @route   PUT /api/blogs/:id
+// @access  Private/Admin
+const updateBlogPost = async (req, res) => {
+    const { title, content, tags, image } = req.body;
+
+    try {
+        const post = await BlogPost.findById(req.params.id);
+
+        if (post) {
+            post.title = title || post.title;
+            post.content = content || post.content;
+            post.tags = tags || post.tags;
+            post.image = image || post.image;
+
+            const updatedPost = await post.save();
+            res.json(updatedPost);
+        } else {
+            res.status(404).json({ message: 'Post not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Delete blog post (Admin only)
 // @route   DELETE /api/blogs/:id
 // @access  Private/Admin
@@ -77,4 +102,4 @@ const deleteBlogPost = async (req, res) => {
     }
 };
 
-module.exports = { getBlogPosts, createBlogPost, getBlogPostById, deleteBlogPost };
+module.exports = { getBlogPosts, createBlogPost, getBlogPostById, updateBlogPost, deleteBlogPost };

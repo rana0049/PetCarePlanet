@@ -11,6 +11,9 @@ import Vets from './pages/Vets';
 import Blogs from './pages/Blogs';
 import PetDetails from './pages/PetDetails';
 import CreateListing from './pages/CreateListing';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import VetManagement from './pages/admin/VetManagement';
+import BlogManagement from './pages/admin/BlogManagement';
 
 function App() {
     return (
@@ -29,6 +32,11 @@ function App() {
                             <Route path="/vets" element={<Vets />} />
                             <Route path="/blogs" element={<Blogs />} />
                             <Route path="/pets/:id" element={<PetDetails />} />
+
+                            {/* Admin Routes */}
+                            <Route path="/admin" element={<AdminDashboard />} />
+                            <Route path="/admin/vets" element={<VetManagement />} />
+                            <Route path="/admin/blogs" element={<BlogManagement />} />
                         </Routes>
                     </main>
                     <Footer />

@@ -51,6 +51,15 @@ const Navbar = () => {
                                         >
                                             Dashboard
                                         </Link>
+                                        {user.role === 'admin' && (
+                                            <Link
+                                                to="/admin"
+                                                className="block px-4 py-3 text-primary-600 hover:bg-primary-50 transition-colors font-medium text-sm"
+                                                onClick={() => setShowDropdown(false)}
+                                            >
+                                                Admin Panel
+                                            </Link>
+                                        )}
                                         <button
                                             onClick={() => { handleLogout(); setShowDropdown(false); }}
                                             className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
