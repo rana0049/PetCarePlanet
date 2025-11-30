@@ -12,11 +12,11 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await login(email, password);
+        const result = await login(email, password);
+        if (result.success) {
             navigate('/dashboard');
-        } catch (err) {
-            setError(err.message || 'Failed to login');
+        } else {
+            setError(result.message);
         }
     };
 
@@ -71,6 +71,12 @@ const Login = () => {
                                     required
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex justify-end mb-6">
+                            <Link to="/forgot-password" className="text-sm font-bold text-primary-600 hover:text-primary-700">
+                                Forgot Password?
+                            </Link>
                         </div>
 
                         <button

@@ -95,10 +95,16 @@ const AdminDashboard = () => {
                                 <span className="text-3xl font-bold text-primary-600">{stats.listings.total}</span>
                             </div>
                             <h3 className="text-lg font-bold text-neutral-900 mb-2">Listings</h3>
-                            <div className="space-y-1 text-sm text-neutral-600">
+                            <div className="space-y-1 text-sm text-neutral-600 mb-3">
                                 <p>Active: {stats.listings.active}</p>
                                 <p>Pending: {stats.listings.pending}</p>
                             </div>
+                            <Link
+                                to="/admin/listings"
+                                className="inline-block px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-semibold text-sm transition-all"
+                            >
+                                Manage Listings →
+                            </Link>
                         </div>
 
                         {/* Appointments Card */}
@@ -134,7 +140,7 @@ const AdminDashboard = () => {
                 {/* Quick Links */}
                 <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
                     <h2 className="text-2xl font-bold text-neutral-900 mb-6">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Link
                             to="/admin/vets"
                             className="flex items-center gap-4 p-4 bg-secondary-50 hover:bg-primary-50 rounded-2xl border border-secondary-200 hover:border-primary-300 transition-all"
@@ -145,6 +151,19 @@ const AdminDashboard = () => {
                             <div>
                                 <h3 className="font-bold text-neutral-900">Manage Vets</h3>
                                 <p className="text-sm text-neutral-600">Approve or reject veterinarians</p>
+                            </div>
+                        </Link>
+
+                        <Link
+                            to="/admin/listings"
+                            className="flex items-center gap-4 p-4 bg-secondary-50 hover:bg-primary-50 rounded-2xl border border-secondary-200 hover:border-primary-300 transition-all"
+                        >
+                            <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+                                <FaShoppingCart className="text-primary-600" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-neutral-900">Manage Listings</h3>
+                                <p className="text-sm text-neutral-600">Review pending pet listings</p>
                             </div>
                         </Link>
 

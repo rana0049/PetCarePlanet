@@ -1,112 +1,90 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { FaSearch, FaFilter, FaPlus, FaPaw, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaPlus, FaArrowRight } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
+import SearchHero from '../components/marketplace/SearchHero';
+import CategoryTiles from '../components/marketplace/CategoryTiles';
+import PetCard from '../components/marketplace/PetCard';
 
 const Marketplace = () => {
     const { user } = useAuth();
-    const [listings, setListings] = useState([]);
-    const [keyword, setKeyword] = useState('');
-    const [category, setCategory] = useState('');
+    const [recentListings, setRecentListings] = useState([]);
 
     useEffect(() => {
-        // Fetch listings logic would go here
-    }, [keyword, category]);
+        const fetchRecent = async () => {
+            try {
+                // Fetch recent listings (limit 6)
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market?limit=6`);
+                setRecentListings(data.slice(0, 6));
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchRecent();
+    }, []);
 
     return (
-        <div className="min-h-screen bg-secondary-50 py-12">
-            <div className="container mx-auto px-4">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold text-neutral-900 mb-4">
-                        Pet Marketplace
-                    </h1>
-                    <p className="text-xl text-neutral-600">Find your perfect companion</p>
+        <div className="min-h-screen bg-secondary-50 pb-20">
+            {/* Hero Section */}
+            <SearchHero />
+
+            {/* Categories */}
+            <CategoryTiles />
+
+            {/* Recent Listings */}
+            <div className="container mx-auto px-4 py-12">
+                <div className="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 className="text-3xl font-display font-bold text-neutral-900 mb-2">Fresh Recommendations</h2>
+                        <p className="text-neutral-600">Check out the latest pets looking for a home</p>
+                    </div>
+                    <Link to="/market/search" className="hidden md:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 transition-colors">
+                        View All Listings <FaArrowRight />
+                    </Link>
                 </div>
 
-                {/* Search & Filter */}
-                <div className="bg-white p-6 rounded-3xl shadow-card mb-8 border border-secondary-100">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="relative">
-                            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" />
-                            <input
-                                type="text"
-                                placeholder="Search pets..."
-                                value={keyword}
-                                onChange={(e) => setKeyword(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-secondary-50 border border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 text-neutral-800 transition-all"
-                            />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    {recentListings.map((listing) => (
+                        <PetCard key={listing._id} listing={listing} />
+                    ))}
+                </div>
+
+                <div className="text-center md:hidden">
+                    <Link to="/market/search" className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 transition-colors">
+                        View All Listings <FaArrowRight />
+                    </Link>
+                </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="container mx-auto px-4 mb-12">
+                <div className="bg-primary-900 rounded-3xl p-8 md:p-12 text-center md:text-left relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent-500 rounded-full blur-3xl opacity-20 translate-x-1/3 -translate-y-1/3"></div>
+                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div>
+                            <h2 className="text-3xl font-display font-bold text-white mb-4">Have a pet to sell?</h2>
+                            <p className="text-primary-100 text-lg max-w-xl">
+                                List your pet on PetCarePlanet and connect with thousands of loving families instantly.
+                            </p>
                         </div>
-                        <div className="relative">
-                            <FaFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" />
-                            <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-secondary-50 border border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 text-neutral-800 transition-all"
-                            >
-                                <option value="">All Categories</option>
-                                <option value="Dog">Dogs</option>
-                                <option value="Cat">Cats</option>
-                                <option value="Bird">Birds</option>
-                            </select>
-                        </div>
-                        {user && (
+                        {user ? (
                             <Link
                                 to="/create-listing"
-                                className="flex items-center justify-center gap-2 px-6 py-3 bg-accent-500 hover:bg-accent-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                                className="px-8 py-4 bg-white text-primary-900 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-primary-50 transition-all flex items-center gap-2"
                             >
-                                <FaPlus /> Sell a Pet
+                                <FaPlus /> Sell Your Pet
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="px-8 py-4 bg-white text-primary-900 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-primary-50 transition-all"
+                            >
+                                Login to Sell
                             </Link>
                         )}
                     </div>
                 </div>
-
-                {/* Listings Grid */}
-                {listings.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-secondary-200">
-                        <p className="text-2xl text-neutral-500">No listings found</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {listings.map((listing) => (
-                            <div
-                                key={listing._id}
-                                className="bg-white rounded-3xl shadow-card overflow-hidden border border-secondary-100 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300"
-                            >
-                                <div className="h-56 bg-secondary-100 flex items-center justify-center text-6xl">
-                                    {listing.image ? (
-                                        <img src={listing.image} alt={listing.title} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <FaPaw className="text-secondary-300" />
-                                    )}
-                                </div>
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <h3 className="text-xl font-bold text-neutral-900">{listing.title}</h3>
-                                        <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-bold">
-                                            {listing.category}
-                                        </span>
-                                    </div>
-                                    <p className="text-neutral-600 mb-4 line-clamp-2">{listing.description}</p>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-2xl font-bold text-accent-600">
-                                            PKR {listing.price.toLocaleString()}
-                                        </span>
-                                        <button className="px-4 py-2 border-2 border-primary-100 text-primary-700 rounded-xl font-bold hover:bg-primary-50 transition-all">
-                                            View Details
-                                        </button>
-                                    </div>
-                                    {listing.location && (
-                                        <p className="text-neutral-500 text-sm mt-3 flex items-center gap-1">
-                                            <FaMapMarkerAlt className="text-neutral-400" /> {listing.location}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </div>
         </div>
     );

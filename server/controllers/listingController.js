@@ -3,13 +3,19 @@ const Listing = require('../models/Listing');
 // @desc    Get all approved listings
 // @route   GET /api/market
 // @access  Public
+// @desc    Get all approved listings
+// @route   GET /api/market
+// @access  Public
 const getListings = async (req, res) => {
-    const { keyword, category, location } = req.query;
+    const { keyword, category, location, minPrice, maxPrice, gender, isVaccinated, isTrained, isPedigree } = req.query;
 
     let query = { status: 'approved' };
 
     if (keyword) {
-        query.title = { $regex: keyword, $options: 'i' };
+        query.$or = [
+            { title: { $regex: keyword, $options: 'i' } },
+            { breed: { $regex: keyword, $options: 'i' } }
+        ];
     }
     if (category) {
         query.category = category;
@@ -17,9 +23,24 @@ const getListings = async (req, res) => {
     if (location) {
         query.location = location;
     }
+    if (gender) {
+        query.gender = gender;
+    }
+
+    // Price Range Filter
+    if (minPrice || maxPrice) {
+        query.price = {};
+        if (minPrice) query.price.$gte = Number(minPrice);
+        if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // Boolean Filters
+    if (isVaccinated === 'true') query.isVaccinated = true;
+    if (isTrained === 'true') query.isTrained = true;
+    if (isPedigree === 'true') query.isPedigree = true;
 
     try {
-        const listings = await Listing.find(query).populate('seller', 'name email');
+        const listings = await Listing.find(query).populate('seller', 'name email').sort({ createdAt: -1 });
         res.json(listings);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -30,7 +51,7 @@ const getListings = async (req, res) => {
 // @route   POST /api/market
 // @access  Private
 const createListing = async (req, res) => {
-    const { title, description, price, category, breed, age, image, location } = req.body;
+    const { title, description, price, category, breed, age, image, location, gender, isVaccinated, isTrained, isPedigree } = req.body;
 
     try {
         const listing = new Listing({
@@ -41,8 +62,13 @@ const createListing = async (req, res) => {
             category,
             breed,
             age,
-            image,
+            age,
+            images: image ? [image] : (req.body.images || []), // Handle both single and multiple image inputs
             location,
+            gender,
+            isVaccinated,
+            isTrained,
+            isPedigree
         });
 
         const createdListing = await listing.save();
@@ -90,4 +116,18 @@ const updateListingStatus = async (req, res) => {
     }
 };
 
-module.exports = { getListings, createListing, getListingById, updateListingStatus };
+// @desc    Get all listings (Admin)
+// @route   GET /api/market/admin/all
+// @access  Private/Admin
+const getAdminListings = async (req, res) => {
+    try {
+        const listings = await Listing.find({})
+            .populate('seller', 'name email')
+            .sort({ status: 1, createdAt: -1 }); // Pending first, then newest
+        res.json(listings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getListings, createListing, getListingById, updateListingStatus, getAdminListings };

@@ -7,42 +7,42 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Nature & Nurture Palette
+                // Trust Blue Palette
                 primary: {
-                    50: '#f2fcf5',
-                    100: '#e1f8e8',
-                    200: '#c3eed4',
-                    300: '#95deb8',
-                    400: '#5fc496',
-                    500: '#39a778', // Sage Green - Natural & Calming
-                    600: '#28865e',
-                    700: '#236b4d',
-                    800: '#1f553f',
-                    900: '#1a4635',
+                    50: '#eff6ff',
+                    100: '#dbeafe',
+                    200: '#bfdbfe',
+                    300: '#93c5fd',
+                    400: '#60a5fa',
+                    500: '#3b82f6', // Primary Blue
+                    600: '#2563eb',
+                    700: '#1d4ed8',
+                    800: '#1e40af',
+                    900: '#1e3a8a',
                 },
                 secondary: {
-                    50: '#fbf9f5',
-                    100: '#f5f0e6',
-                    200: '#ebe0cc',
-                    300: '#decba8',
-                    400: '#d0b382',
-                    500: '#c49a62', // Warm Beige - Comfort
-                    600: '#b8834f',
-                    700: '#99663d',
-                    800: '#7d5235',
-                    900: '#65432d',
+                    50: '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#64748b', // Slate
+                    600: '#475569',
+                    700: '#334155',
+                    800: '#1e293b',
+                    900: '#0f172a',
                 },
                 accent: {
-                    50: '#fff5f2',
-                    100: '#ffe8e1',
-                    200: '#ffd4c6',
-                    300: '#ffb6a1',
-                    400: '#ff8e70',
-                    500: '#f96643', // Soft Coral - Friendly & Playful
-                    600: '#e64a26',
-                    700: '#c03616',
-                    800: '#9f2d15',
-                    900: '#832915',
+                    50: '#fff1f2',
+                    100: '#ffe4e6',
+                    200: '#fecdd3',
+                    300: '#fda4af',
+                    400: '#fb7185',
+                    500: '#f43f5e', // Rose
+                    600: '#e11d48',
+                    700: '#be123c',
+                    800: '#9f1239',
+                    900: '#881337',
                 },
                 neutral: {
                     50: '#fafaf9',
@@ -50,11 +50,23 @@ export default {
                     200: '#e7e5e4',
                     300: '#d6d3d1',
                     400: '#a8a29e',
-                    500: '#78716c', // Warm Gray
+                    500: '#78716c',
                     600: '#57534e',
                     700: '#44403c',
                     800: '#292524',
                     900: '#1c1917',
+                },
+                cta: {
+                    50: '#fffbeb',
+                    100: '#fef3c7',
+                    200: '#fde68a',
+                    300: '#fcd34d',
+                    400: '#fbbf24',
+                    500: '#f59e0b', // Amber
+                    600: '#d97706',
+                    700: '#b45309',
+                    800: '#92400e',
+                    900: '#78350f',
                 },
             },
             fontFamily: {
@@ -65,12 +77,12 @@ export default {
                 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
                 'card': '0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04)',
                 'card-hover': '0 0 0 1px rgba(0, 0, 0, 0.03), 0 12px 24px -4px rgba(0, 0, 0, 0.08)',
-                'glow': '0 0 20px rgba(57, 167, 120, 0.3)',
+                'glow': '0 0 20px rgba(59, 130, 246, 0.5)',
             },
             backgroundImage: {
-                'gradient-hero': 'linear-gradient(to right bottom, #fbf9f5, #e1f8e8)',
-                'gradient-primary': 'linear-gradient(135deg, #39a778 0%, #28865e 100%)',
-                'gradient-warm': 'linear-gradient(135deg, #f5f0e6 0%, #ebe0cc 100%)',
+                'gradient-hero': 'linear-gradient(to right bottom, #eff6ff, #dbeafe)',
+                'gradient-primary': 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                'gradient-warm': 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

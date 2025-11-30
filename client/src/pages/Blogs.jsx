@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Blogs = () => {
@@ -7,7 +8,7 @@ const Blogs = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/blogs');
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/blogs`);
                 setPosts(data);
             } catch (error) {
                 console.error(error);
@@ -17,9 +18,9 @@ const Blogs = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-secondary-50 py-12">
+        <div className="min-h-screen bg-secondary-50 py-8">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-12">
+                <div className="text-center mb-8">
                     <h1 className="text-4xl font-display font-bold text-neutral-900 mb-4">Pet Care Tips & Articles</h1>
                     <p className="text-lg text-neutral-600">Expert advice for your furry friends</p>
                 </div>
@@ -38,15 +39,18 @@ const Blogs = () => {
                                     </span>
                                     <h2 className="text-xl font-display font-bold text-neutral-900 mb-2 line-clamp-2">{post.title}</h2>
                                     <p className="text-sm text-neutral-400 mb-4">
-                                        By <span className="text-primary-600 font-medium">{post.author.name}</span> • {new Date(post.createdAt).toLocaleDateString()}
+                                        By <span className="text-primary-600 font-medium">{post.author?.name || 'Unknown'}</span> • {new Date(post.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                                 <p className="text-neutral-600 mb-6 flex-grow line-clamp-3 leading-relaxed">
                                     {post.content.substring(0, 150)}...
                                 </p>
-                                <button className="w-full py-3 border-2 border-primary-100 text-primary-700 font-bold rounded-xl hover:bg-primary-50 transition-colors">
+                                <Link
+                                    to={`/blogs/${post._id}`}
+                                    className="block w-full py-3 border-2 border-primary-100 text-primary-700 font-bold rounded-xl hover:bg-primary-50 transition-colors text-center"
+                                >
                                     Read Article
-                                </button>
+                                </Link>
                             </div>
                         ))}
                     </div>

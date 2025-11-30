@@ -20,11 +20,11 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await register(formData);
+        const result = await register(formData);
+        if (result.success) {
             navigate('/dashboard');
-        } catch (err) {
-            setError(err.message || 'Failed to register');
+        } else {
+            setError(result.message);
         }
     };
 

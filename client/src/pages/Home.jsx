@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaPaw, FaHeart, FaStethoscope, FaShoppingCart, FaArrowRight, FaQuoteLeft, FaCheckCircle } from 'react-icons/fa';
+import { FaPaw, FaHeart, FaStethoscope, FaShoppingCart, FaArrowRight, FaQuoteLeft, FaCheckCircle, FaUserPlus, FaHandshake, FaHome } from 'react-icons/fa';
 import heroImage from '../assets/hero-pets.png';
 import { useAuth } from '../context/AuthContext';
 
@@ -42,7 +42,7 @@ const Home = () => {
                             The most trusted marketplace for buying and selling pets. Connect with responsible breeders and loving families.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col sm:flex-row flex-wrap gap-4">
                             {user ? (
                                 <Link
                                     to="/dashboard"
@@ -67,6 +67,14 @@ const Home = () => {
                             >
                                 <FaPaw className="text-primary-500" />
                                 Find a Pet
+                            </Link>
+
+                            <Link
+                                to="/vets"
+                                className="px-8 py-4 bg-white hover:bg-secondary-50 text-neutral-700 border border-secondary-200 rounded-full font-semibold text-lg shadow-sm hover:shadow-md transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                <FaStethoscope className="text-primary-500" />
+                                Find a Vet
                             </Link>
                         </div>
                     </motion.div>
@@ -109,33 +117,40 @@ const Home = () => {
             </section>
 
             {/* How It Works Section */}
-            <section className="py-24 bg-secondary-50 relative overflow-hidden">
+            <section className="py-24 bg-gradient-to-b from-white via-primary-50/30 to-white relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-display font-bold text-neutral-900 mb-4">How It Works</h2>
                         <p className="text-lg text-neutral-500">Simple steps to a happier pet</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                        {/* Connecting Line (Desktop) */}
+                        <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-secondary-200 -translate-y-1/2 z-0"></div>
+
                         <StepCard
                             number="01"
                             title="Create a Profile"
                             desc="Sign up to browse available pets or list your own for sale."
+                            icon={<FaUserPlus />}
+                            delay={0.1}
                         />
                         <StepCard
                             number="02"
                             title="Connect & Verify"
                             desc="Chat with sellers, verify details, and ensure a safe transaction."
+                            icon={<FaHandshake />}
+                            delay={0.2}
                         />
                         <StepCard
                             number="03"
                             title="Welcome Home"
                             desc="Bring your new family member home and start your journey together."
+                            icon={<FaHome />}
+                            delay={0.3}
                         />
                     </div>
                 </div>
-                {/* Decorative Blob */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-100/50 rounded-full blur-3xl -z-10"></div>
             </section>
 
             {/* Testimonials Section */}
@@ -209,12 +224,23 @@ const FeatureCard = ({ icon, title, desc, delay }) => (
     </motion.div>
 );
 
-const StepCard = ({ number, title, desc }) => (
-    <div className="relative p-8 text-center group">
-        <div className="text-6xl font-display font-bold text-primary-100 mb-4 group-hover:text-primary-200 transition-colors">{number}</div>
+const StepCard = ({ number, title, desc, icon, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay }}
+        whileHover={{ y: -10 }}
+        className="relative z-10 bg-gradient-to-br from-white to-primary-50 p-8 rounded-3xl shadow-card border border-primary-100 text-center group hover:shadow-xl transition-all duration-300"
+    >
+        <div className="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center text-2xl text-primary-600 mb-6 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+            {icon}
+        </div>
+        <div className="absolute top-4 right-4 text-4xl font-display font-bold text-primary-100 opacity-50 group-hover:text-primary-200 transition-colors duration-300 select-none">
+            {number}
+        </div>
         <h3 className="text-xl font-display font-bold text-neutral-900 mb-3">{title}</h3>
         <p className="text-neutral-500 leading-relaxed">{desc}</p>
-    </div>
+    </motion.div>
 );
 
 const TestimonialCard = ({ quote, author, role }) => (

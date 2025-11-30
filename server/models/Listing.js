@@ -24,10 +24,10 @@ const listingSchema = mongoose.Schema({
     },
     breed: String,
     age: Number,
-    image: {
+    images: [{
         type: String, // URL to image
         required: true,
-    },
+    }],
     status: {
         type: String,
         enum: ['pending', 'approved', 'sold', 'rejected'],
@@ -36,6 +36,23 @@ const listingSchema = mongoose.Schema({
     location: {
         type: String,
         required: true, // e.g., Lahore, Karachi
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female', 'Pair', 'Unknown'],
+        default: 'Unknown',
+    },
+    isVaccinated: {
+        type: Boolean,
+        default: false,
+    },
+    isTrained: {
+        type: Boolean,
+        default: false,
+    },
+    isPedigree: {
+        type: Boolean,
+        default: false,
     },
 }, {
     timestamps: true,
