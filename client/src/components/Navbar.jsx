@@ -1,12 +1,32 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaPaw, FaUserCircle, FaChevronDown } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    // Fetch unread count
+    useEffect(() => {
+        if (!user) return;
+        const fetchUnread = async () => {
+            try {
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/messages/unread`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                setUnreadCount(data.count);
+            } catch (error) {
+                console.error('Failed to fetch unread count', error);
+            }
+        };
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 30000); // 30s poll
+        return () => clearInterval(interval);
+    }, [user]);
 
     const handleLogout = () => {
         logout();
@@ -33,39 +53,48 @@ const Navbar = () => {
                         <NavLink to="/blogs">Blog</NavLink>
 
                         {user ? (
-                            <div className="relative">
+                            <div
+                                className="relative"
+                                onMouseEnter={() => setShowDropdown(true)}
+                                onMouseLeave={() => setShowDropdown(false)}
+                            >
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className="flex items-center space-x-2 px-4 py-2 bg-secondary-50 hover:bg-secondary-100 text-neutral-700 rounded-full transition-all border border-secondary-200"
+                                    className="flex items-center space-x-2 px-4 py-2 bg-secondary-50 hover:bg-secondary-100 text-neutral-700 rounded-full transition-all border border-secondary-200 relative"
                                 >
                                     <FaUserCircle className="text-xl text-primary-500" />
                                     <span className="font-medium text-sm">{user.name}</span>
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full animate-pulse"></span>
+                                    )}
                                     <FaChevronDown className={`text-xs transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
                                 </button>
                                 {showDropdown && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-white border border-secondary-100 rounded-xl shadow-card-hover overflow-hidden animate-fade-in">
-                                        <Link
-                                            to="/dashboard"
-                                            className="block px-4 py-3 text-neutral-700 hover:bg-secondary-50 transition-colors font-medium text-sm"
-                                            onClick={() => setShowDropdown(false)}
-                                        >
-                                            Dashboard
-                                        </Link>
-                                        {user.role === 'admin' && (
+                                    <div className="absolute right-0 top-full pt-2 w-56 animate-fade-in">
+                                        <div className="bg-white border border-secondary-100 rounded-xl shadow-card-hover overflow-hidden">
                                             <Link
-                                                to="/admin"
-                                                className="block px-4 py-3 text-primary-600 hover:bg-primary-50 transition-colors font-medium text-sm"
+                                                to="/dashboard"
+                                                className="block px-4 py-3 text-neutral-700 hover:bg-secondary-50 transition-colors font-medium text-sm"
                                                 onClick={() => setShowDropdown(false)}
                                             >
-                                                Admin Panel
+                                                Dashboard
                                             </Link>
-                                        )}
-                                        <button
-                                            onClick={() => { handleLogout(); setShowDropdown(false); }}
-                                            className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
-                                        >
-                                            Logout
-                                        </button>
+                                            {user.role === 'admin' && (
+                                                <Link
+                                                    to="/admin"
+                                                    className="block px-4 py-3 text-primary-600 hover:bg-primary-50 transition-colors font-medium text-sm"
+                                                    onClick={() => setShowDropdown(false)}
+                                                >
+                                                    Admin Panel
+                                                </Link>
+                                            )}
+                                            <button
+                                                onClick={() => { handleLogout(); setShowDropdown(false); }}
+                                                className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
+                                            >
+                                                Logout
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

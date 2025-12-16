@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { FaUpload, FaImage, FaPaw, FaTag, FaMapMarkerAlt, FaInfoCircle, FaDollarSign, FaTimes, FaPhone } from 'react-icons/fa';
 
-const CreateListing = () => {
-    const { user, updateUser } = useAuth();
+const EditListing = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
+    const { id } = useParams();
+
+    // Initialize with mostly empty, but will fetch data
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -20,28 +23,61 @@ const CreateListing = () => {
         isPedigree: false,
         images: [],
         location: '',
-        phone: user?.phone || '',
+        // phone not needed to sync back to user, just for display? 
+        // Actually backend doesn't update user phone on edit, usually. 
+        // But let's leave phone out of form for now as it's user profile data, unless we want per-listing phone?
+        // CreateListing synced it to user profile. 
+        // Let's assume phone is fetched from user profile or we just don't edit it here.
     });
     const [error, setError] = useState('');
-    const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user?.phone) {
-            setFormData(prev => ({ ...prev, phone: user.phone }));
-        }
-    }, [user]);
+        const fetchListing = async () => {
+            try {
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market/${id}`);
+
+                // Verify ownership (client-side check for UX, backend handles security)
+                if (user && data.seller._id !== user._id && user.role !== 'admin') {
+                    setError('You are not authorized to edit this listing');
+                    setLoading(false);
+                    return;
+                }
+
+                setFormData({
+                    title: data.title,
+                    description: data.description,
+                    price: data.price,
+                    category: data.category,
+                    breed: data.breed,
+                    age: data.age,
+                    gender: data.gender,
+                    isVaccinated: data.isVaccinated,
+                    isTrained: data.isTrained,
+                    isPedigree: data.isPedigree,
+                    images: data.images || [],
+                    location: data.location,
+                });
+                setLoading(false);
+            } catch (err) {
+                console.error(err);
+                setError('Failed to fetch listing');
+                setLoading(false);
+            }
+        };
+        fetchListing();
+    }, [id, user]);
 
     const handleChange = (e) => {
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setFormData({ ...formData, [e.target.name]: value });
-        setError(''); // Clear error on change
+        setError('');
     };
 
     const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
 
-        // Check if adding these files exceeds the limit
         if (formData.images.length + files.length > 5) {
             setError('You can only upload a maximum of 5 images');
             return;
@@ -49,13 +85,10 @@ const CreateListing = () => {
 
         const newImages = [];
         for (const file of files) {
-            // Validate file size (5MB limit)
             if (file.size > 5 * 1024 * 1024) {
                 setError(`Image ${file.name} is too large (max 5MB)`);
                 return;
             }
-
-            // Create preview
             const reader = new FileReader();
             reader.readAsDataURL(file);
             await new Promise((resolve) => {
@@ -79,29 +112,18 @@ const CreateListing = () => {
             return;
         }
 
-        if (!formData.phone) {
-            setError('Please provide a phone number so buyers can contact you.');
-            window.scrollTo(0, 0);
-            return;
-        }
-
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            // Include phone in payload explicitly if it's being set/updated
-            await axios.post(`${import.meta.env.VITE_API_URL}/market`, formData, config);
-
-            // Update local user if phone was added
-            if (!user.phone && formData.phone) {
-                updateUser({ ...user, phone: formData.phone });
-            }
-
-            navigate('/market');
+            await axios.put(`${import.meta.env.VITE_API_URL}/market/${id}`, formData, config);
+            navigate('/dashboard'); // Go back to dashboard after edit
         } catch (error) {
             console.error(error);
-            setError(error.response?.data?.message || 'Failed to create listing. Please check your inputs.');
+            setError(error.response?.data?.message || 'Failed to update listing');
             window.scrollTo(0, 0);
         }
     };
+
+    if (loading) return <div className="text-center py-20">Loading...</div>;
 
     return (
         <div className="min-h-screen bg-secondary-50 py-12">
@@ -109,9 +131,9 @@ const CreateListing = () => {
                 <div className="max-w-3xl mx-auto">
                     <div className="text-center mb-10">
                         <h1 className="text-4xl md:text-5xl font-display font-bold text-neutral-900 mb-4">
-                            List Your Pet
+                            Edit Listing
                         </h1>
-                        <p className="text-xl text-neutral-600">Find a loving new home for your pet</p>
+                        <p className="text-xl text-neutral-600">Update your pet's details</p>
                     </div>
 
                     {error && (
@@ -164,7 +186,6 @@ const CreateListing = () => {
                                     </label>
                                 )}
                             </div>
-                            <p className="text-neutral-500 text-sm">Supported formats: JPG, PNG. Max size: 5MB per image.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -175,8 +196,8 @@ const CreateListing = () => {
                                     <input
                                         type="text"
                                         name="title"
+                                        value={formData.title}
                                         onChange={handleChange}
-                                        placeholder="e.g., Golden Retriever Puppy"
                                         className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                         required
                                     />
@@ -189,8 +210,8 @@ const CreateListing = () => {
                                     <input
                                         type="number"
                                         name="price"
+                                        value={formData.price}
                                         onChange={handleChange}
-                                        placeholder="25000"
                                         className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                         required
                                     />
@@ -204,8 +225,8 @@ const CreateListing = () => {
                                 <FaInfoCircle className="absolute left-4 top-5 text-neutral-400" />
                                 <textarea
                                     name="description"
+                                    value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="Describe your pet's personality, health, and any special features..."
                                     className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-none"
                                     rows="4"
                                     required
@@ -220,6 +241,7 @@ const CreateListing = () => {
                                     <FaTag className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                                     <select
                                         name="category"
+                                        value={formData.category}
                                         onChange={handleChange}
                                         className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
                                     >
@@ -237,8 +259,8 @@ const CreateListing = () => {
                                     <input
                                         type="text"
                                         name="breed"
+                                        value={formData.breed}
                                         onChange={handleChange}
-                                        placeholder="e.g., Persian"
                                         className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                     />
                                 </div>
@@ -251,8 +273,8 @@ const CreateListing = () => {
                                 <input
                                     type="number"
                                     name="age"
+                                    value={formData.age}
                                     onChange={handleChange}
-                                    placeholder="2"
                                     className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                 />
                             </div>
@@ -260,6 +282,7 @@ const CreateListing = () => {
                                 <label className="block text-neutral-700 font-bold mb-2">Gender</label>
                                 <select
                                     name="gender"
+                                    value={formData.gender}
                                     onChange={handleChange}
                                     className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
                                 >
@@ -278,35 +301,13 @@ const CreateListing = () => {
                                 <input
                                     type="text"
                                     name="location"
+                                    value={formData.location}
                                     onChange={handleChange}
-                                    placeholder="Lahore, Pakistan"
                                     className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
                                     required
                                 />
                             </div>
                         </div>
-
-                        {!user?.phone && (
-                            <div className="mb-6">
-                                <label className="block text-neutral-700 font-bold mb-2">Contact Phone Number</label>
-                                <div className="relative">
-                                    <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        placeholder="0300 1234567"
-                                        className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
-                                        required
-                                    />
-                                </div>
-                                <p className="text-sm text-neutral-500 mt-1">
-                                    <FaInfoCircle className="inline mr-1" />
-                                    This will be saved to your profile for future listings.
-                                </p>
-                            </div>
-                        )}
 
                         <div className="mb-8">
                             <label className="block text-neutral-700 font-bold mb-4">Additional Features</label>
@@ -344,12 +345,21 @@ const CreateListing = () => {
                             </div>
                         </div>
 
-                        <button
-                            type="submit"
-                            className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                        >
-                            Post Listing
-                        </button>
+                        <div className="flex gap-4">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/dashboard')}
+                                className="flex-1 py-4 bg-secondary-200 text-neutral-800 hover:bg-secondary-300 rounded-xl font-bold text-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="flex-1 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -357,4 +367,4 @@ const CreateListing = () => {
     );
 };
 
-export default CreateListing;
+export default EditListing;

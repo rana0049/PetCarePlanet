@@ -18,7 +18,7 @@ const Home = () => {
                         alt="Happy pets in nature"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-secondary-50/90 via-secondary-50/70 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-secondary-50/50 via-secondary-50/30 to-transparent"></div>
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10 pt-20">

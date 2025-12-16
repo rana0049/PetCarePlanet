@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaUser, FaEnvelope, FaLock, FaUserMd, FaPaw, FaStar } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaUserMd, FaPaw, FaStar, FaPhone } from 'react-icons/fa';
 
 const Register = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         password: '',
         role: 'pet_owner',
     });
@@ -77,6 +78,20 @@ const Register = () => {
                                     onChange={handleChange}
                                     placeholder="you@example.com"
                                     required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-neutral-700 font-bold mb-2 text-sm">Phone Number</label>
+                            <div className="relative">
+                                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" />
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                                    onChange={handleChange}
+                                    placeholder="+92 300 1234567"
                                 />
                             </div>
                         </div>

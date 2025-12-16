@@ -32,7 +32,7 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-card border border-secondary-100">
+        <div className="bg-white p-5 rounded-3xl shadow-card border border-secondary-100 h-full">
             <div className="flex items-center gap-2 mb-6 text-primary-700 font-bold text-lg">
                 <FaFilter /> Filters
             </div>

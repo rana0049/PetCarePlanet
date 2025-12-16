@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
-import { FaPaw, FaMapMarkerAlt, FaCheckCircle } from 'react-icons/fa';
+import { FaPaw, FaMapMarkerAlt, FaCheckCircle, FaCrown } from 'react-icons/fa';
 
 const PetCard = ({ listing }) => {
     return (
         <Link
             to={`/market/${listing._id}`}
-            className="bg-white rounded-3xl shadow-card overflow-hidden border border-secondary-100 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 block group h-full flex flex-col"
+            className={`bg-white rounded-3xl shadow-card overflow-hidden border hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 block group h-full flex flex-col ${listing.isFeatured ? 'border-yellow-400 ring-2 ring-yellow-100' : 'border-secondary-100'}`}
         >
             <div className="h-52 bg-secondary-100 relative overflow-hidden">
                 {(listing.images && listing.images.length > 0) || listing.image ? (
@@ -19,7 +19,12 @@ const PetCard = ({ listing }) => {
                         <FaPaw className="text-6xl text-secondary-300" />
                     </div>
                 )}
-                <div className="absolute top-3 left-3 flex gap-2">
+                <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+                    {listing.isFeatured && (
+                        <span className="px-3 py-1 bg-yellow-400 text-yellow-900 rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
+                            <FaCrown className="text-[10px]" /> Featured
+                        </span>
+                    )}
                     <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-primary-700 rounded-full text-xs font-bold shadow-sm">
                         {listing.category}
                     </span>

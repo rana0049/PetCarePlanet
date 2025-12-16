@@ -14,8 +14,8 @@ const Marketplace = () => {
     useEffect(() => {
         const fetchRecent = async () => {
             try {
-                // Fetch recent listings (limit 6)
-                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market?limit=6`);
+                // Fetch featured listings (limit 6)
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market?isFeatured=true&limit=6`);
                 setRecentListings(data.slice(0, 6));
             } catch (error) {
                 console.error(error);
@@ -34,10 +34,11 @@ const Marketplace = () => {
 
             {/* Recent Listings */}
             <div className="container mx-auto px-4 py-12">
+
                 <div className="flex justify-between items-end mb-8">
                     <div>
-                        <h2 className="text-3xl font-display font-bold text-neutral-900 mb-2">Fresh Recommendations</h2>
-                        <p className="text-neutral-600">Check out the latest pets looking for a home</p>
+                        <h2 className="text-3xl font-display font-bold text-neutral-900 mb-2">Featured Recommendations</h2>
+                        <p className="text-neutral-600">Check out the latest featured pets looking for a home</p>
                     </div>
                     <Link to="/market/search" className="hidden md:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 transition-colors">
                         View All Listings <FaArrowRight />

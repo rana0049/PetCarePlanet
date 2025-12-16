@@ -8,7 +8,20 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
+// Import Routes
+const authRoutes = require('./routes/authRoutes');
+const petRoutes = require('./routes/petRoutes');
+const listingRoutes = require('./routes/listingRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+const blogRoutes = require('./routes/blogRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+
 dotenv.config();
+
+// Connect to Database
+connectDB();
 
 const app = express();
 
@@ -19,7 +32,7 @@ app.use(compression());
 // Rate Limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    max: 1000 // limit each IP to 1000 requests per windowMs
 });
 app.use(limiter);
 
@@ -29,25 +42,18 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Database Connection
-connectDB();
+// Mount Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/pets', petRoutes);
+app.use('/api/market', listingRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
-// Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/pets', require('./routes/petRoutes'));
-app.use('/api/market', require('./routes/listingRoutes'));
-app.use('/api/appointments', require('./routes/appointmentRoutes'));
-app.use('/api/blogs', require('./routes/blogRoutes'));
-app.use('/api/payments', require('./routes/paymentRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
-
-app.get('/', (req, res) => {
-    res.send('PetCarePlenet API is running...');
-});
-
-// Error Handling
+// Error Middleware
 app.use(notFound);
 app.use(errorHandler);
 
@@ -56,3 +62,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+

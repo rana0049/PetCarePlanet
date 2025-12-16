@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { FaPaw, FaSpinner } from 'react-icons/fa';
+import { FaPaw, FaSpinner, FaFilter, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import FilterSidebar from '../components/marketplace/FilterSidebar';
 import PetCard from '../components/marketplace/PetCard';
 
@@ -9,6 +10,7 @@ const MarketplaceListings = () => {
     const location = useLocation();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showFilters, setShowFilters] = useState(true);
     const [filters, setFilters] = useState({
         category: '',
         location: '',
@@ -54,7 +56,22 @@ const MarketplaceListings = () => {
                 if (keyword) params.append('keyword', keyword);
 
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market?${params.toString()}`);
-                setListings(data);
+
+                // Mock "Featured" status for demonstration (randomly assign to ~20% of listings)
+                // In production, this would come from the backend
+                const enhancedData = data.map((item, index) => ({
+                    ...item,
+                    isFeatured: index % 5 === 0 // Every 5th item is featured
+                }));
+
+                // Sort: Featured first
+                const sortedData = enhancedData.sort((a, b) => {
+                    if (a.isFeatured && !b.isFeatured) return -1;
+                    if (!a.isFeatured && b.isFeatured) return 1;
+                    return 0;
+                });
+
+                setListings(sortedData);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -77,18 +94,45 @@ const MarketplaceListings = () => {
     return (
         <div className="min-h-screen bg-secondary-50 py-8">
             <div className="container mx-auto px-4">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar Filters */}
-                    <div className="w-full lg:w-1/4">
-                        <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
-                    </div>
+                <div className="flex flex-col lg:flex-row gap-8 items-start relative">
+                    {/* Sidebar Filters with Animation */}
+                    <AnimatePresence mode='wait'>
+                        {showFilters && (
+                            <motion.div
+                                initial={{ width: 0, opacity: 0, x: -20 }}
+                                animate={{ width: '16rem', opacity: 1, x: 0 }}
+                                exit={{ width: 0, opacity: 0, x: -20 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                className="flex-shrink-0 overflow-hidden"
+                            >
+                                <div className="w-64">
+                                    <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Listings Grid */}
-                    <div className="w-full lg:w-3/4">
-                        <div className="mb-6 flex justify-between items-center">
-                            <h1 className="text-2xl font-bold text-neutral-900">
-                                {listings.length} Results Found
-                            </h1>
+                    <motion.div
+                        layout
+                        className="flex-1 w-full"
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    >
+                        <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-secondary-100 sticky top-4 z-30">
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all duration-300 ${showFilters ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-200' : 'bg-white text-neutral-600 border border-secondary-200 hover:border-primary-300 hover:text-primary-600 shadow-sm'}`}
+                                >
+                                    <FaFilter className={showFilters ? "" : "text-neutral-400"} />
+                                    <span className="hidden sm:inline">{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
+                                    {showFilters ? <FaChevronLeft className="text-xs" /> : <FaChevronRight className="text-xs" />}
+                                </button>
+                                <div className="h-6 w-px bg-secondary-200"></div>
+                                <h1 className="text-lg font-bold text-neutral-900">
+                                    {listings.length} Results Found
+                                </h1>
+                            </div>
                             {/* Sort dropdown could go here */}
                         </div>
 
@@ -108,13 +152,27 @@ const MarketplaceListings = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {listings.map((listing) => (
-                                    <PetCard key={listing._id} listing={listing} />
-                                ))}
-                            </div>
+                            <motion.div
+                                layout
+                                className={`grid grid-cols-1 md:grid-cols-2 ${showFilters ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6`}
+                            >
+                                <AnimatePresence>
+                                    {listings.map((listing) => (
+                                        <motion.div
+                                            layout
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            transition={{ duration: 0.2 }}
+                                            key={listing._id}
+                                        >
+                                            <PetCard listing={listing} />
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </motion.div>
                         )}
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </div>

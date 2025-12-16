@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaTimes, FaPaw, FaCalendar } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaPaw, FaCalendar, FaTag } from 'react-icons/fa';
+import MessagesSection from '../components/dashboard/MessagesSection';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const Dashboard = () => {
     const { user } = useAuth();
     const [pets, setPets] = useState([]);
+    const [listings, setListings] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [showAddPet, setShowAddPet] = useState(false);
     const [newPet, setNewPet] = useState({
@@ -24,10 +27,14 @@ const Dashboard = () => {
                     headers: { Authorization: `Bearer ${user.token}` },
                 };
 
-                if (user.role === 'pet_owner') {
+                if (user.role === 'pet_owner' || user.role === 'admin') {
                     const petsRes = await axios.get(`${import.meta.env.VITE_API_URL}/pets`, config);
                     setPets(petsRes.data);
                 }
+
+                // Fetch Listings
+                const listingsRes = await axios.get(`${import.meta.env.VITE_API_URL}/market/mylistings`, config);
+                setListings(listingsRes.data);
 
                 const apptRes = await axios.get(`${import.meta.env.VITE_API_URL}/appointments`, config);
                 setAppointments(apptRes.data);
@@ -53,6 +60,31 @@ const Dashboard = () => {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) {
+            try {
+                const config = { headers: { Authorization: `Bearer ${user.token}` } };
+                // Note: The Dashboard currently sets 'Pets' from /pets endpoint which might be mapped to listings?
+                // The task is about "Listing Management". The 'pets' state in Dashboard seems to come from `/pets` endpoint.
+                // But the edit route points to `/edit-listing/:id` which updates `/market/:id`.
+                // If `/pets` returns listings, then deleting should exist on `/market/:id`.
+                // Let's assume the user wants to delete the *listing*. 
+                // However, /pets endpoint usually implies "My Pets" (health records) vs "My Listings" (Marketplace).
+                // If this dashboard shows listings, we should use /market API. 
+                // Looking at Dashboard.jsx, it calls `/pets`. 
+                // Let's check if `/pets` and `/market` share the same collection or if they are different.
+                // Assuming "My Pets" on dashboard are the listings. 
+                // I will use the /api/market endpoint for deletion as per my backend plan.
+
+                await axios.delete(`${import.meta.env.VITE_API_URL}/market/${id}`, config);
+                setListings(listings.filter(listing => listing._id !== id));
+            } catch (error) {
+                console.error(error);
+                alert('Failed to delete listing');
+            }
+        }
+    };
+
     if (!user) return <div className="min-h-screen bg-secondary-50 flex items-center justify-center text-neutral-800">Please log in.</div>;
 
     return (
@@ -67,7 +99,8 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Pets Section */}
-                    {user.role === 'pet_owner' && (
+                    {/* Pets Section */}
+                    {(user.role === 'pet_owner' || user.role === 'admin') && (
                         <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-display font-bold text-neutral-900 flex items-center gap-2">
@@ -107,6 +140,63 @@ const Dashboard = () => {
                         </div>
                     )}
 
+                    {/* Listings Section */}
+                    <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-display font-bold text-neutral-900 flex items-center gap-2">
+                                <FaTag className="text-accent-500" />
+                                My Listings
+                            </h2>
+                            <Link
+                                to="/create-listing"
+                                className="flex items-center gap-2 px-6 py-3 bg-accent-500 hover:bg-accent-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                            >
+                                <FaPlus /> sell Pet
+                            </Link>
+                        </div>
+                        {listings.length === 0 ? (
+                            <div className="text-center py-12 bg-secondary-50 rounded-2xl border border-secondary-200">
+                                <FaTag className="text-6xl text-secondary-300 mx-auto mb-4" />
+                                <p className="text-neutral-500 text-lg">No listings yet. Sell a pet!</p>
+                            </div>
+                        ) : (
+                            <ul className="space-y-4">
+                                {listings.map((listing) => (
+                                    <li key={listing._id} className="bg-secondary-50 border border-secondary-200 p-5 rounded-2xl flex justify-between items-center hover:shadow-md transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-white">
+                                                {listing.images && listing.images.length > 0 ? (
+                                                    <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-secondary-200 flex items-center justify-center text-secondary-400"><FaTag /></div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-neutral-900 text-lg">{listing.title}</h3>
+                                                <p className="text-primary-600 font-bold">Rs. {listing.price.toLocaleString()}</p>
+                                                <p className="text-xs uppercase font-bold tracking-wider text-neutral-500">{listing.status}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Link
+                                                to={`/edit-listing/${listing._id}`}
+                                                className="px-3 py-2 bg-white border border-secondary-200 text-primary-600 rounded-lg text-sm font-bold hover:bg-primary-50 transition-all"
+                                            >
+                                                Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(listing._id)}
+                                                className="px-3 py-2 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100 transition-all"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
                     {/* Appointments Section */}
                     <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100">
                         <h2 className="text-2xl font-display font-bold text-neutral-900 mb-6 flex items-center gap-2">
@@ -139,6 +229,11 @@ const Dashboard = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Messages Section */}
+                <ErrorBoundary>
+                    <MessagesSection />
+                </ErrorBoundary>
             </div>
 
             {/* Add Pet Modal */}
