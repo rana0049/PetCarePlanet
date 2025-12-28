@@ -6,47 +6,37 @@ import PageHero from '../components/PageHero';
 
 const Vets = () => {
     const { user } = useAuth();
-    const [vets] = useState([
-        {
-            id: 1,
-            name: 'Dr. Ali Khan',
-            clinic: 'Pet Care Clinic, Lahore',
-            experience: 10,
-            specialization: 'Surgeon',
-            image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80',
-            rating: 4.9,
-            reviews: 124,
-            fee: 1500,
-            availability: 'Available Today',
-            patients: '1000+'
-        },
-        {
-            id: 2,
-            name: 'Dr. Sara Ahmed',
-            clinic: 'Happy Pets, Karachi',
-            experience: 5,
-            specialization: 'General Physician',
-            image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80',
-            rating: 4.8,
-            reviews: 89,
-            fee: 1200,
-            availability: 'Available Tomorrow',
-            patients: '500+'
-        },
-        {
-            id: 3,
-            name: 'Dr. Bilal Raza',
-            clinic: 'Vet World, Islamabad',
-            experience: 8,
-            specialization: 'Dermatologist',
-            image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=300&q=80',
-            rating: 4.7,
-            reviews: 65,
-            fee: 2000,
-            availability: 'Available Today',
-            patients: '750+'
-        },
-    ]);
+    const [vets, setVets] = useState([]);
+
+    useEffect(() => {
+        const fetchVets = async () => {
+            try {
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users/vets`);
+                // Transform data to match UI expected format if needed, or update UI to match data
+                // Backend returns: { _id, name, specialization, experience, clinicAddress, ... }
+                // UI expects: { id, name, clinic, experience, specialization, ... }
+
+                const formattedVets = data.map(vet => ({
+                    id: vet._id,
+                    name: vet.name,
+                    clinic: vet.clinicAddress || 'No Clinic Address',
+                    experience: vet.experience || 0,
+                    specialization: vet.specialization || 'General Vet',
+                    category: vet.vetCategory || 'Small Animal',
+                    image: vet.image || 'https://via.placeholder.com/300',
+                    rating: vet.rating || 0, // Default to 0 if no rating
+                    reviews: vet.reviews || 0,
+                    fee: vet.fee || 1000,
+                    availability: 'Available Today',
+                    patients: '0+'
+                }));
+                setVets(formattedVets);
+            } catch (error) {
+                console.error('Error fetching vets:', error);
+            }
+        };
+        fetchVets();
+    }, []);
 
     const [showBooking, setShowBooking] = useState(false);
     const [selectedVet, setSelectedVet] = useState(null);
@@ -59,17 +49,16 @@ const Vets = () => {
     });
     const [filters, setFilters] = useState({
         location: '',
-        specialization: '',
+        category: '',
         name: ''
     });
 
-    // Extract unique locations and specializations
+    // Extract unique locations
     const locations = [...new Set(vets.map(vet => vet.clinic.split(', ')[1] || vet.clinic))];
-    const specializations = [...new Set(vets.map(vet => vet.specialization))];
 
     useEffect(() => {
         const fetchPets = async () => {
-            if (user && (user.role === 'pet_owner' || user.role === 'admin')) {
+            if (user) {
                 try {
                     const config = { headers: { Authorization: `Bearer ${user.token}` } };
                     const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/pets`, config);
@@ -87,20 +76,34 @@ const Vets = () => {
             alert('Please login to book an appointment');
             return;
         }
-        if (user.role !== 'pet_owner' && user.role !== 'admin') {
-            alert('Only pet owners can book appointments');
-            return;
-        }
+        // Removed Role Check: Allow any registered user to book
         setSelectedVet(vet);
         setShowBooking(true);
     };
+
+    const categoryMap = {
+        'Small Animal': ['Dog', 'Cat', 'Rabbit', 'Bird', 'Hamster'],
+        'Large Animal': ['Horse', 'Cow', 'Sheep', 'Goat', 'Pig'],
+        'Exotic Animal': ['Snake', 'Lizard', 'Turtle', 'Parrot'],
+        'Mixed': null, // All types allowed
+        'Other': null
+    };
+
+    const allowedTypes = selectedVet ? categoryMap[selectedVet.category] : null;
+
+    const compatiblePets = pets.filter(pet => {
+        if (!selectedVet) return false;
+        if (!allowedTypes) return true; // Mixed/Other allows all
+        // Simple case-insensitive check
+        return allowedTypes.some(type => pet.type.toLowerCase() === type.toLowerCase());
+    });
 
     const handleSubmitBooking = async (e) => {
         e.preventDefault();
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
             await axios.post(`${import.meta.env.VITE_API_URL}/appointments`, {
-                vetId: '507f1f77bcf86cd799439011', // Mock vet ID
+                vetId: selectedVet.id,
                 petId: booking.petId,
                 date: booking.date,
                 timeSlot: booking.timeSlot,
@@ -117,10 +120,10 @@ const Vets = () => {
 
     const filteredVets = vets.filter(vet => {
         const matchesLocation = filters.location === '' || vet.clinic.includes(filters.location);
-        const matchesSpecialization = filters.specialization === '' || vet.specialization === filters.specialization;
+        const matchesCategory = filters.category === '' || vet.category === filters.category;
         const matchesName = filters.name === '' || vet.name.toLowerCase().includes(filters.name.toLowerCase());
 
-        return matchesLocation && matchesSpecialization && matchesName;
+        return matchesLocation && matchesCategory && matchesName;
     });
 
     return (
@@ -155,18 +158,20 @@ const Vets = () => {
                             </select>
                         </div>
 
-                        {/* Specialization Filter */}
+                        {/* Category Filter */}
                         <div className="relative">
                             <FaStethoscope className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                             <select
-                                value={filters.specialization}
-                                onChange={(e) => setFilters({ ...filters, specialization: e.target.value })}
+                                value={filters.category}
+                                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
                                 className="w-full pl-10 pr-4 py-3 bg-secondary-50 border border-secondary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all text-neutral-800 appearance-none cursor-pointer"
                             >
-                                <option value="">All Specializations</option>
-                                {specializations.map(spec => (
-                                    <option key={spec} value={spec}>{spec}</option>
-                                ))}
+                                <option value="">All Categories</option>
+                                <option value="Small Animal">Small Animal</option>
+                                <option value="Large Animal">Large Animal</option>
+                                <option value="Mixed">Mixed</option>
+                                <option value="Exotic Animal">Exotic Animal</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 
@@ -218,12 +223,16 @@ const Vets = () => {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h3 className="text-lg font-bold text-neutral-900 leading-tight mb-1">{vet.name}</h3>
-                                            <p className="text-primary-600 font-medium text-sm mb-2">{vet.specialization}</p>
+                                            <p className="text-primary-600 font-medium text-sm mb-2">{vet.category} • {vet.specialization}</p>
                                         </div>
                                         <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
                                             <span className="text-yellow-500 text-sm">★</span>
-                                            <span className="text-neutral-900 font-bold text-sm">{vet.rating}</span>
-                                            <span className="text-neutral-400 text-xs">({vet.reviews})</span>
+                                            <span className="text-neutral-900 font-bold text-sm">
+                                                {vet.rating > 0 ? vet.rating : 'New'}
+                                            </span>
+                                            <span className="text-neutral-400 text-xs">
+                                                ({vet.reviews} reviews)
+                                            </span>
                                         </div>
                                     </div>
 
@@ -296,9 +305,12 @@ const Vets = () => {
                                             required
                                         >
                                             <option value="">Choose a pet...</option>
-                                            {pets.map((pet) => (
+                                            {compatiblePets.map((pet) => (
                                                 <option key={pet._id} value={pet._id}>{pet.name} ({pet.type})</option>
                                             ))}
+                                            {compatiblePets.length === 0 && (
+                                                <option disabled>No {selectedVet?.category || ''} pets found. Please add a pet.</option>
+                                            )}
                                         </select>
                                     </div>
                                 </div>

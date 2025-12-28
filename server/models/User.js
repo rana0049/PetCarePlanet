@@ -14,14 +14,34 @@ const userSchema = mongoose.Schema(
             default: 'pet_owner',
         },
         // For Vets
-        specialization: String,
-        experience: Number,
+        specialization: {
+            type: String,
+            default: 'General Vet',
+        },
+        vetCategory: {
+            type: String,
+            enum: ['Small Animal', 'Large Animal', 'Mixed', 'Exotic Animal', 'Other'],
+            default: 'Small Animal'
+        },
+        experience: {
+            type: Number,
+            default: 0,
+        },
         clinicAddress: String,
         isApproved: {
             type: Boolean,
             default: function () {
                 return this.role !== 'vet'; // Vets need approval
             },
+        },
+        // Subscription Fields
+        subscriptionStatus: {
+            type: String,
+            enum: ['active', 'inactive'],
+            default: 'inactive',
+        },
+        subscriptionExpiresAt: {
+            type: Date,
         },
         // Password reset fields
         resetPasswordToken: String,

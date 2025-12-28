@@ -41,13 +41,39 @@ const getListings = async (req, res) => {
     if (isVaccinated === 'true') query.isVaccinated = true;
     if (isTrained === 'true') query.isTrained = true;
     if (isPedigree === 'true') query.isPedigree = true;
-    if (isFeatured === 'true') query.isFeatured = true;
+    if (isFeatured === 'true') {
+        query.isFeatured = true;
+        query.featuredExpiresAt = { $gt: new Date() };
+    }
 
     try {
         console.log('DEBUG: Final Query:', JSON.stringify(query));
         const listings = await Listing.find(query).populate('seller', 'name email phone').sort({ createdAt: -1 });
+
+        // Runtime check to un-feature expired listings in the response (optional but good for consistency)
+        // Note: This doesn't update the DB, just the response. 
+        // Ideally we'd have a cron job, but this works for now.
+        // Runtime check to un-feature expired listings in the response
+        const processedListings = listings.map(listing => {
+            const now = new Date();
+            // Strict check: Must have an expiration date AND it must be in the future
+            const hasValidFeature = listing.isFeatured &&
+                listing.featuredExpiresAt &&
+                new Date(listing.featuredExpiresAt) > now;
+
+            if (!hasValidFeature) {
+                // If not valid, force false in response
+                if (listing.isFeatured) {
+                    const doc = listing.toObject ? listing.toObject() : listing;
+                    doc.isFeatured = false;
+                    return doc;
+                }
+            }
+            return listing;
+        });
+
         console.log(`DEBUG: Found ${listings.length} listings`);
-        res.json(listings);
+        res.json(processedListings);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -60,6 +86,7 @@ const createListing = async (req, res) => {
     const { title, description, price, category, breed, age, image, location, gender, isVaccinated, isTrained, isPedigree } = req.body;
 
     try {
+        console.log('DEBUG: createListing body:', req.body);
         const images = image ? [image] : (req.body.images || []);
 
         if (images.length === 0) {
@@ -96,6 +123,7 @@ const createListing = async (req, res) => {
         const createdListing = await listing.save();
         res.status(201).json(createdListing);
     } catch (error) {
+        console.error('DEBUG: createListing error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -108,7 +136,17 @@ const getListingById = async (req, res) => {
         const listing = await Listing.findById(req.params.id).populate('seller', 'name email phone');
 
         if (listing) {
-            res.json(listing);
+            // Runtime check for expiration
+            let listingData = listing.toObject();
+            const now = new Date();
+            const hasValidFeature = listingData.isFeatured &&
+                listingData.featuredExpiresAt &&
+                new Date(listingData.featuredExpiresAt) > now;
+
+            if (!hasValidFeature) {
+                listingData.isFeatured = false;
+            }
+            res.json(listingData);
         } else {
             res.status(404).json({ message: 'Listing not found' });
         }
@@ -232,4 +270,42 @@ const updateListing = async (req, res) => {
     }
 };
 
-module.exports = { getListings, createListing, getListingById, updateListingStatus, getAdminListings, deleteListing, updateListing, getMyListings };
+// @desc    Promote a listing (Admin)
+// @route   PUT /api/market/:id/feature
+// @access  Private/Admin
+const promoteListing = async (req, res) => {
+    const { duration } = req.body; // 'weekly' or 'monthly'
+
+    try {
+        const listing = await Listing.findById(req.params.id);
+
+        if (!listing) {
+            return res.status(404).json({ message: 'Listing not found' });
+        }
+
+        const now = new Date();
+
+        if (duration === 'remove') {
+            listing.isFeatured = false;
+            listing.featuredExpiresAt = null;
+        } else {
+            const expiresAt = new Date(now);
+            if (duration === 'monthly') {
+                expiresAt.setDate(expiresAt.getDate() + 30);
+            } else {
+                // Default to weekly
+                expiresAt.setDate(expiresAt.getDate() + 7);
+            }
+            console.log(`DEBUG: Promoting listing ${listing._id} to ${duration}. Expires: ${expiresAt}`);
+            listing.isFeatured = true;
+            listing.featuredExpiresAt = expiresAt;
+        }
+
+        const updatedListing = await listing.save();
+        res.json(updatedListing);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getListings, createListing, getListingById, updateListingStatus, getAdminListings, deleteListing, updateListing, getMyListings, promoteListing };

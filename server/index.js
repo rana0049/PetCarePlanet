@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 const petRoutes = require('./routes/petRoutes');
 const listingRoutes = require('./routes/listingRoutes');
 const messageRoutes = require('./routes/messageRoutes');
@@ -17,6 +18,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 dotenv.config();
 
@@ -45,6 +47,7 @@ app.use(express.json({ limit: '50mb' }));
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/market', listingRoutes);
 app.use('/api/messages', messageRoutes);
@@ -52,6 +55,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Error Middleware
 app.use(notFound);

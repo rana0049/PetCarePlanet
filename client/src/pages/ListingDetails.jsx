@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaPaw, FaMapMarkerAlt, FaTag, FaUser, FaEnvelope, FaArrowLeft, FaChevronLeft, FaChevronRight, FaExpand, FaTimes, FaPhone, FaPaperPlane } from 'react-icons/fa';
+import PaymentModal from '../components/PaymentModal';
+import { FaPaw, FaMapMarkerAlt, FaTag, FaUser, FaEnvelope, FaArrowLeft, FaChevronLeft, FaChevronRight, FaExpand, FaTimes, FaPhone, FaPaperPlane, FaRocket } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ListingDetails = () => {
@@ -11,7 +13,9 @@ const ListingDetails = () => {
     const [listing, setListing] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     // Messaging & Contact State
     const [showPhone, setShowPhone] = useState(false);
@@ -233,6 +237,20 @@ const ListingDetails = () => {
                                 >
                                     <FaEnvelope /> Email Seller
                                 </a>
+
+                                {/* Promote Listing Button (Seller Only) */}
+                                {user && listing.seller && user._id === listing.seller._id && (
+                                    <button
+                                        onClick={() => setIsPaymentModalOpen(true)}
+                                        disabled={listing.isFeatured}
+                                        className={`w-full py-3 text-white text-center rounded-xl font-bold transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5 shadow-md ${listing.isFeatured
+                                            ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 cursor-default'
+                                            : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
+                                            }`}
+                                    >
+                                        <FaRocket /> {listing.isFeatured ? 'Featured Listing' : 'Promote This Listing'}
+                                    </button>
+                                )}
                             </div>
 
                             {/* On-site Messaging */}
@@ -358,6 +376,25 @@ const ListingDetails = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <div className="container mx-auto px-4 py-4 text-xs text-red-500 bg-red-50 border border-red-200 rounded mt-4">
+                <p>DEBUG INFO (Remove later):</p>
+                <p>User ID: {user?._id || 'Not logged in'}</p>
+                <p>Seller ID: {listing.seller?._id || 'No seller info'}</p>
+                <p>Is Owner: {user && listing.seller && user._id === listing.seller._id ? 'Yes' : 'No'}</p>
+                <p>Listing Featured: {listing.isFeatured ? 'Yes' : 'No'}</p>
+            </div>
+
+            <PaymentModal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                type="feature_listing"
+                amount={500}
+                relatedId={listing._id}
+                onSuccess={() => {
+                    alert('Payment submitted! Admin will verify soon.');
+                    // Optionally refresh listing
+                }}
+            />
         </div>
     );
 };

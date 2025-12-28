@@ -57,15 +57,8 @@ const MarketplaceListings = () => {
 
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market?${params.toString()}`);
 
-                // Mock "Featured" status for demonstration (randomly assign to ~20% of listings)
-                // In production, this would come from the backend
-                const enhancedData = data.map((item, index) => ({
-                    ...item,
-                    isFeatured: index % 5 === 0 // Every 5th item is featured
-                }));
-
                 // Sort: Featured first
-                const sortedData = enhancedData.sort((a, b) => {
+                const sortedData = data.sort((a, b) => {
                     if (a.isFeatured && !b.isFeatured) return -1;
                     if (!a.isFeatured && b.isFeatured) return 1;
                     return 0;

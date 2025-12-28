@@ -26,6 +26,7 @@ import ResetPassword from './pages/ResetPassword';
 
 import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './components/ErrorBoundary';
+import ChatBot from './components/ChatBot';
 
 function App() {
     return (
@@ -64,6 +65,7 @@ function App() {
                         </ErrorBoundary>
                     </main>
                     <Footer />
+                    <ChatBot />
                 </div>
             </Router>
         </AuthProvider>

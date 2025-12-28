@@ -58,6 +58,9 @@ const listingSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    featuredExpiresAt: {
+        type: Date,
+    },
 }, {
     timestamps: true,
 });

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { FaUser, FaPaperPlane } from 'react-icons/fa';
 
-const MessagesSection = () => {
+const MessagesSection = ({ targetChatUser }) => {
     const { user } = useAuth();
     const [conversations, setConversations] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);
@@ -13,6 +13,24 @@ const MessagesSection = () => {
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    // Handle targetChatUser (New Conversation Trigger)
+    useEffect(() => {
+        if (targetChatUser && conversations.length >= 0) { // Ensure conversations are loaded/tried
+            const existingConv = conversations.find(c => c.partner?._id === targetChatUser._id);
+            if (existingConv) {
+                setSelectedChat(existingConv);
+            } else {
+                // Initialize temporary new chat
+                setSelectedChat({
+                    partner: targetChatUser,
+                    messages: [],
+                    unreadCount: 0,
+                    isNew: true // Optional flag
+                });
+            }
+        }
+    }, [targetChatUser, conversations]);
 
     // Fetch conversations
     useEffect(() => {

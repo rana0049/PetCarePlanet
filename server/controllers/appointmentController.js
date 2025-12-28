@@ -37,7 +37,7 @@ const getAppointments = async (req, res) => {
         }
 
         const appointments = await Appointment.find(query)
-            .populate('petOwner', 'name email')
+            .populate('petOwner', 'name email phone')
             .populate('vet', 'name clinicAddress')
             .populate('pet', 'name type');
 
@@ -47,22 +47,37 @@ const getAppointments = async (req, res) => {
     }
 };
 
-// @desc    Update appointment status (Vet only)
+// @desc    Update appointment status (Vet or Pet Owner for cancellation)
 // @route   PUT /api/appointments/:id/status
-// @access  Private (Vet)
+// @access  Private
 const updateAppointmentStatus = async (req, res) => {
     const { status } = req.body;
 
     try {
         const appointment = await Appointment.findById(req.params.id);
 
-        if (appointment && appointment.vet.toString() === req.user._id.toString()) {
-            appointment.status = status;
-            const updatedAppointment = await appointment.save();
-            res.json(updatedAppointment);
-        } else {
-            res.status(404).json({ message: 'Appointment not found or unauthorized' });
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
         }
+
+        // Allow Appointment Owner to CANCEL only if it's their appointment
+        // REMOVED 'pending' check to allow cancelling confirmed appointments too
+        if (appointment.petOwner.toString() === req.user._id.toString()) {
+            const requestedStatus = status.toLowerCase().trim();
+
+            if (requestedStatus === 'cancelled') {
+                // User requested simple deletion ("delete that instance")
+                await Appointment.findByIdAndDelete(req.params.id);
+                return res.json({ message: 'Appointment deleted', _id: req.params.id, status: 'cancelled' });
+            } else {
+                return res.status(400).json({ message: 'Pet owners can only cancel appointments.' });
+            }
+        }
+
+        // Detailed Auth Error
+        return res.status(401).json({
+            message: `Not authorized. You (${req.user._id}) do not own this appointment (${appointment.petOwner}).`
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

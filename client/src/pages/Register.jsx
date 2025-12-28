@@ -10,6 +10,10 @@ const Register = () => {
         phone: '',
         password: '',
         role: 'pet_owner',
+        specialization: '',
+        vetCategory: 'Small Animal',
+        experience: '',
+        clinicAddress: ''
     });
     const { register } = useAuth();
     const navigate = useNavigate();
@@ -139,6 +143,56 @@ const Register = () => {
                             </div>
                         </div>
 
+                        {formData.role === 'vet' && (
+                            <div className="space-y-4 animate-fadeIn">
+                                <div className="p-4 bg-accent-50 rounded-2xl border border-accent-100">
+                                    <h3 className="text-accent-800 font-bold mb-3 flex items-center gap-2">
+                                        <FaUserMd /> Professional Details
+                                    </h3>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-neutral-700 font-bold mb-2 text-sm">Specialization</label>
+                                            <input
+                                                type="text"
+                                                name="specialization"
+                                                className="w-full bg-white border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-all"
+                                                onChange={handleChange}
+                                                placeholder="e.g. Surgeon, General Practitioner"
+                                                required={formData.role === 'vet'}
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-neutral-700 font-bold mb-2 text-sm">Experience (Years)</label>
+                                                <input
+                                                    type="number"
+                                                    name="experience"
+                                                    className="w-full bg-white border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-all"
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. 5"
+                                                    min="0"
+                                                    required={formData.role === 'vet'}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-neutral-700 font-bold mb-2 text-sm">Clinic Name/Address</label>
+                                                <input
+                                                    type="text"
+                                                    name="clinicAddress"
+                                                    className="w-full bg-white border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-all"
+                                                    onChange={handleChange}
+                                                    placeholder="City or Clinic Name"
+                                                    required={formData.role === 'vet'}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <button
                             type="submit"
                             className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
@@ -154,8 +208,8 @@ const Register = () => {
                         </Link>
                     </p>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

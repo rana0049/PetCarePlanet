@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaUserMd, FaCheck, FaTimes, FaGraduationCap, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaUserMd, FaCheck, FaTimes, FaGraduationCap, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const VetManagement = () => {
     const { user } = useAuth();
@@ -84,8 +84,8 @@ const VetManagement = () => {
                     <button
                         onClick={() => setFilter('all')}
                         className={`px-6 py-3 rounded-xl font-bold transition-all ${filter === 'all'
-                                ? 'bg-primary-600 text-white shadow-lg'
-                                : 'bg-white text-neutral-700 border border-secondary-200 hover:bg-secondary-50'
+                            ? 'bg-primary-600 text-white shadow-lg'
+                            : 'bg-white text-neutral-700 border border-secondary-200 hover:bg-secondary-50'
                             }`}
                     >
                         All ({vets.length})
@@ -93,8 +93,8 @@ const VetManagement = () => {
                     <button
                         onClick={() => setFilter('pending')}
                         className={`px-6 py-3 rounded-xl font-bold transition-all ${filter === 'pending'
-                                ? 'bg-accent-600 text-white shadow-lg'
-                                : 'bg-white text-neutral-700 border border-secondary-200 hover:bg-secondary-50'
+                            ? 'bg-accent-600 text-white shadow-lg'
+                            : 'bg-white text-neutral-700 border border-secondary-200 hover:bg-secondary-50'
                             }`}
                     >
                         Pending ({vets.filter(v => !v.isApproved).length})
@@ -102,8 +102,8 @@ const VetManagement = () => {
                     <button
                         onClick={() => setFilter('approved')}
                         className={`px-6 py-3 rounded-xl font-bold transition-all ${filter === 'approved'
-                                ? 'bg-green-600 text-white shadow-lg'
-                                : 'bg-white text-neutral-700 border border-secondary-200 hover:bg-secondary-50'
+                            ? 'bg-green-600 text-white shadow-lg'
+                            : 'bg-white text-neutral-700 border border-secondary-200 hover:bg-secondary-50'
                             }`}
                     >
                         Approved ({vets.filter(v => v.isApproved).length})
@@ -134,8 +134,8 @@ const VetManagement = () => {
                                     </div>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs font-bold ${vet.isApproved
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-yellow-100 text-yellow-700'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-yellow-100 text-yellow-700'
                                             }`}
                                     >
                                         {vet.isApproved ? 'Approved' : 'Pending'}
@@ -151,8 +151,13 @@ const VetManagement = () => {
                                         <FaMapMarkerAlt className="text-neutral-400" />
                                         {vet.clinicAddress || 'No address provided'}
                                     </p>
-                                    <p className="text-neutral-500">
-                                        Email: {vet.email}
+                                    <p className="flex items-center gap-2">
+                                        <FaEnvelope className="text-neutral-400" />
+                                        {vet.email}
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                        <FaPhone className="text-neutral-400" />
+                                        {vet.phone || 'No phone provided'}
                                     </p>
                                 </div>
 

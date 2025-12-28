@@ -29,6 +29,7 @@ const registerUser = async (req, res) => {
             specialization,
             experience,
             clinicAddress,
+            vetCategory: req.body.vetCategory,
         });
 
         if (user) {
@@ -37,6 +38,9 @@ const registerUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                specialization: user.specialization,
+                experience: user.experience,
+                clinicAddress: user.clinicAddress,
                 token: generateToken(user._id),
             });
         } else {
@@ -62,6 +66,9 @@ const loginUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                specialization: user.specialization,
+                experience: user.experience,
+                clinicAddress: user.clinicAddress,
                 token: generateToken(user._id),
             });
         } else {

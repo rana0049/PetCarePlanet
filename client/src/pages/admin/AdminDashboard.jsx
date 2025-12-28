@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaUsers, FaUserMd, FaShoppingCart, FaCalendar, FaBlog, FaChartLine } from 'react-icons/fa';
+import { FaUsers, FaUserMd, FaShoppingCart, FaCalendar, FaBlog, FaChartLine, FaMoneyBillWave, FaCheck, FaTimes } from 'react-icons/fa';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [stats, setStats] = useState(null);
+    const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,11 +17,16 @@ const AdminDashboard = () => {
             return;
         }
 
+
+
         const fetchStats = async () => {
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/admin/stats`, config);
                 setStats(data);
+
+                const { data: payments } = await axios.get(`${import.meta.env.VITE_API_URL}/payments/pending`, config);
+                setTransactions(payments);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -30,6 +36,19 @@ const AdminDashboard = () => {
 
         fetchStats();
     }, [user, navigate]);
+
+    const handleTransaction = async (id, action) => {
+        if (!window.confirm(`Are you sure you want to ${action} this payment?`)) return;
+        try {
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            await axios.put(`${import.meta.env.VITE_API_URL}/payments/action/${id}/${action}`, {}, config);
+            setTransactions(prev => prev.filter(t => t._id !== id));
+            alert(`Payment ${action}d successfully!`);
+        } catch (error) {
+            console.error(error);
+            alert(`Failed to ${action} payment.`);
+        }
+    };
 
     if (loading) {
         return (
@@ -133,6 +152,72 @@ const AdminDashboard = () => {
                             >
                                 Manage Blogs →
                             </Link>
+                        </div>
+                    </div>
+                )}
+
+                {/* Payment Requests Section */}
+                {transactions.length > 0 && (
+                    <div className="bg-white p-8 rounded-3xl shadow-card border border-secondary-100 mb-12">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <FaMoneyBillWave className="text-green-600 text-xl" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-neutral-900">Pending Payments</h2>
+                                <p className="text-neutral-600">Review manual payment submissions</p>
+                            </div>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b border-secondary-100 text-neutral-500 text-sm uppercase">
+                                        <th className="py-4 px-2">User</th>
+                                        <th className="py-4 px-2">Details</th>
+                                        <th className="py-4 px-2">Method</th>
+                                        <th className="py-4 px-2">Reference (TID)</th>
+                                        <th className="py-4 px-2">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {transactions.map(t => (
+                                        <tr key={t._id} className="border-b border-secondary-50 hover:bg-secondary-50 transition-colors">
+                                            <td className="py-4 px-2">
+                                                <p className="font-bold text-neutral-900">{t.user?.name || 'Unknown'}</p>
+                                                <p className="text-xs text-neutral-500">{t.user?.email}</p>
+                                            </td>
+                                            <td className="py-4 px-2">
+                                                <p className="font-bold text-neutral-800">{t.type === 'feature_listing' ? 'Featured Listing' : 'Vet Subscription'}</p>
+                                                <p className="text-xs text-neutral-500">Rs. {t.amount}</p>
+                                                {t.relatedListing && <p className="text-xs text-blue-500 truncate w-32">{t.relatedListing.title}</p>}
+                                            </td>
+                                            <td className="py-4 px-2">
+                                                <span className={`px-2 py-1 rounded text-xs font-bold ${t.paymentMethod === 'jazzcash' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                                                    {t.paymentMethod.toUpperCase()}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-2 font-mono text-neutral-700">{t.transactionReference}</td>
+                                            <td className="py-4 px-2">
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleTransaction(t._id, 'approve')}
+                                                        className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200" title="Approve"
+                                                    >
+                                                        <FaCheck />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleTransaction(t._id, 'reject')}
+                                                        className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200" title="Reject"
+                                                    >
+                                                        <FaTimes />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 )}

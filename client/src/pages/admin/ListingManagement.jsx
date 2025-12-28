@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
-import { FaCheck, FaTimes, FaPaw, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaPaw, FaMapMarkerAlt, FaTag, FaTrash, FaStar, FaBolt } from 'react-icons/fa';
 
 const ListingManagement = () => {
     const { user } = useAuth();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [promotingId, setPromotingId] = useState(null);
 
     useEffect(() => {
-        fetchListings();
-    }, []);
+        if (user) {
+            fetchListings();
+        }
+    }, [user]);
 
     const fetchListings = async () => {
+        if (!user) return;
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
             const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/market/admin/all`, config);
@@ -34,6 +38,50 @@ const ListingManagement = () => {
             alert('Failed to update status');
         }
     };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) {
+            try {
+                const config = { headers: { Authorization: `Bearer ${user.token}` } };
+                await axios.delete(`${import.meta.env.VITE_API_URL}/market/${id}`, config);
+                setListings(listings.filter(listing => listing._id !== id));
+            } catch (error) {
+                console.error(error);
+                alert('Failed to delete listing');
+            }
+        }
+    };
+
+    const handlePromote = async (e, id, duration) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log(`DEBUG: handlePromote called for ${id} with duration ${duration}`);
+        // Auto-confirm as requested by user
+        // if (!window.confirm(...)) return;
+
+        setPromotingId(id);
+        try {
+            console.log('DEBUG: Sending request...');
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            const res = await axios.put(`${import.meta.env.VITE_API_URL}/market/${id}/feature`, { duration }, config);
+            console.log('DEBUG: Request success:', res.data);
+
+            if (duration === 'remove') {
+                alert('Success: Promotion removed!');
+            } else {
+                alert(`Success: Promoted (${duration})!`);
+            }
+            await fetchListings();
+        } catch (error) {
+            console.error('DEBUG: Promotion error:', error);
+            console.error('DEBUG: Error response:', error.response);
+            alert('Error: Failed to update promotion status. Check console for details.');
+        } finally {
+            setPromotingId(null);
+        }
+    };
+
 
     if (loading) {
         return (
@@ -71,9 +119,10 @@ const ListingManagement = () => {
                                         <td className="p-6">
                                             <div className="flex items-center gap-4">
                                                 <img
-                                                    src={listing.image}
+                                                    src={(listing.images && listing.images.length > 0) ? listing.images[0] : (listing.image || 'https://via.placeholder.com/150')}
                                                     alt={listing.title}
                                                     className="w-16 h-16 rounded-xl object-cover shadow-sm"
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150'; }}
                                                 />
                                                 <div>
                                                     <h3 className="font-bold text-neutral-900">{listing.title}</h3>
@@ -90,15 +139,15 @@ const ListingManagement = () => {
                                             <div className="text-sm text-neutral-500">{listing.seller?.email}</div>
                                         </td>
                                         <td className="p-6 font-bold text-primary-600">
-                                            PKR {listing.price.toLocaleString()}
+                                            PKR {(listing.price || 0).toLocaleString()}
                                         </td>
                                         <td className="p-6">
                                             <span className={`px-3 py-1 rounded-full text-sm font-bold ${listing.status === 'approved' ? 'bg-green-100 text-green-700' :
-                                                    listing.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                                        listing.status === 'sold' ? 'bg-blue-100 text-blue-700' :
-                                                            'bg-yellow-100 text-yellow-700'
+                                                listing.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                                    listing.status === 'sold' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-yellow-100 text-yellow-700'
                                                 }`}>
-                                                {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
+                                                {listing.status ? listing.status.charAt(0).toUpperCase() + listing.status.slice(1) : 'Unknown'}
                                             </span>
                                         </td>
                                         <td className="p-6 text-right">
@@ -120,6 +169,33 @@ const ListingManagement = () => {
                                                     </button>
                                                 </div>
                                             )}
+                                            <button
+                                                onClick={() => handleDelete(listing._id)}
+                                                className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-red-100 hover:text-red-600 transition-colors ml-2"
+                                                title="Delete Listing"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                            <div className="flex gap-1 ml-2">
+                                                <button
+                                                    onClick={(e) => handlePromote(e, listing._id, 'weekly')}
+                                                    disabled={promotingId === listing._id}
+                                                    className={`p-2 rounded-lg transition-colors ${listing.isFeatured ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-100 text-gray-400 hover:bg-yellow-100 hover:text-yellow-600'} ${promotingId === listing._id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    title="Promote Weekly"
+                                                >
+                                                    <FaBolt className={promotingId === listing._id ? 'animate-pulse' : ''} />
+                                                </button>
+                                                {listing.isFeatured && (
+                                                    <button
+                                                        onClick={(e) => handlePromote(e, listing._id, 'remove')}
+                                                        disabled={promotingId === listing._id}
+                                                        className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors"
+                                                        title="Remove Promotion"
+                                                    >
+                                                        <FaTimes className={promotingId === listing._id ? 'animate-pulse' : ''} />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
