@@ -5,13 +5,19 @@ const User = require('../models/User');
 // @route   POST /api/appointments
 // @access  Private (Pet Owner)
 const bookAppointment = async (req, res) => {
-    const { vetId, petId, date, timeSlot, reason } = req.body;
+    const { vetId, petId, petName, petSpecies, date, timeSlot, reason } = req.body;
 
     try {
+        if (!petId && (!petName || !petSpecies)) {
+            return res.status(400).json({ message: 'Please provide either a registered pet or pet name and species' });
+        }
+
         const appointment = new Appointment({
             petOwner: req.user._id,
             vet: vetId,
-            pet: petId,
+            pet: petId || undefined,
+            petName: petId ? undefined : petName,
+            petSpecies: petId ? undefined : petSpecies,
             date,
             timeSlot,
             reason,

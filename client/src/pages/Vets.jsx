@@ -28,7 +28,10 @@ const Vets = () => {
                     reviews: vet.reviews || 0,
                     fee: vet.fee || 1000,
                     availability: 'Available Today',
-                    patients: '0+'
+                    fee: vet.fee || 1000,
+                    availability: 'Available Today',
+                    patients: '0+',
+                    supportedSpecies: vet.supportedSpecies || []
                 }));
                 setVets(formattedVets);
             } catch (error) {
@@ -43,6 +46,13 @@ const Vets = () => {
     const [pets, setPets] = useState([]);
     const [booking, setBooking] = useState({
         petId: '',
+        date: '',
+        timeSlot: '10:00 AM - 11:00 AM',
+        reason: '',
+        petId: '',
+        petName: '',
+        petSpecies: '',
+        isGuestPet: false,
         date: '',
         timeSlot: '10:00 AM - 11:00 AM',
         reason: '',
@@ -102,16 +112,32 @@ const Vets = () => {
         e.preventDefault();
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            await axios.post(`${import.meta.env.VITE_API_URL}/appointments`, {
+            const payload = {
                 vetId: selectedVet.id,
-                petId: booking.petId,
                 date: booking.date,
                 timeSlot: booking.timeSlot,
                 reason: booking.reason,
-            }, config);
+            };
+
+            if (booking.isGuestPet) {
+                payload.petName = booking.petName;
+                payload.petSpecies = booking.petSpecies;
+            } else {
+                payload.petId = booking.petId;
+            }
+
+            await axios.post(`${import.meta.env.VITE_API_URL}/appointments`, payload, config);
             alert('Appointment booked successfully!');
             setShowBooking(false);
-            setBooking({ petId: '', date: '', timeSlot: '10:00 AM - 11:00 AM', reason: '' });
+            setBooking({
+                petId: '',
+                petName: '',
+                petSpecies: '',
+                isGuestPet: false,
+                date: '',
+                timeSlot: '10:00 AM - 11:00 AM',
+                reason: ''
+            });
         } catch (error) {
             console.error(error);
             alert('Failed to book appointment');
@@ -295,24 +321,91 @@ const Vets = () => {
                         <form onSubmit={handleSubmitBooking} className="space-y-6">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-neutral-700 font-semibold mb-2 text-sm">Select Pet</label>
-                                    <div className="relative">
-                                        <FaPaw className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-                                        <select
-                                            value={booking.petId}
-                                            onChange={(e) => setBooking({ ...booking, petId: e.target.value })}
-                                            className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
-                                            required
-                                        >
-                                            <option value="">Choose a pet...</option>
-                                            {compatiblePets.map((pet) => (
-                                                <option key={pet._id} value={pet._id}>{pet.name} ({pet.type})</option>
-                                            ))}
-                                            {compatiblePets.length === 0 && (
-                                                <option disabled>No {selectedVet?.category || ''} pets found. Please add a pet.</option>
-                                            )}
-                                        </select>
+                                    <label className="block text-neutral-700 font-semibold mb-2 text-sm">I am booking for:</label>
+                                    <div className="flex gap-4 mb-4">
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="bookingType"
+                                                checked={!booking.isGuestPet}
+                                                onChange={() => setBooking({ ...booking, isGuestPet: false })}
+                                                className="text-primary-600 focus:ring-primary-500"
+                                            />
+                                            <span className="text-neutral-700">My Registered Pet</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="bookingType"
+                                                checked={booking.isGuestPet}
+                                                onChange={() => setBooking({ ...booking, isGuestPet: true })}
+                                                className="text-primary-600 focus:ring-primary-500"
+                                            />
+                                            <span className="text-neutral-700">Someone Else / New Pet</span>
+                                        </label>
                                     </div>
+
+                                    {!booking.isGuestPet ? (
+                                        <>
+                                            <label className="block text-neutral-700 font-semibold mb-2 text-sm">Select Pet</label>
+                                            <div className="relative">
+                                                <FaPaw className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                                <select
+                                                    value={booking.petId}
+                                                    onChange={(e) => setBooking({ ...booking, petId: e.target.value })}
+                                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
+                                                    required={!booking.isGuestPet}
+                                                >
+                                                    <option value="">Choose a pet...</option>
+                                                    {compatiblePets.map((pet) => (
+                                                        <option key={pet._id} value={pet._id}>{pet.name} ({pet.type})</option>
+                                                    ))}
+                                                    {compatiblePets.length === 0 && (
+                                                        <option disabled>No {selectedVet?.category || ''} pets found. Please add a pet.</option>
+                                                    )}
+                                                </select>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Pet Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={booking.petName}
+                                                    onChange={(e) => setBooking({ ...booking, petName: e.target.value })}
+                                                    className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                                                    placeholder="e.g., Fluffy"
+                                                    required={booking.isGuestPet}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-neutral-700 font-semibold mb-2 text-sm">Pet Species</label>
+                                                <div className="relative">
+                                                    <FaPaw className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                                    <select
+                                                        value={booking.petSpecies}
+                                                        onChange={(e) => setBooking({ ...booking, petSpecies: e.target.value })}
+                                                        className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none"
+                                                        required={booking.isGuestPet}
+                                                    >
+                                                        <option value="">Select Species...</option>
+                                                        {selectedVet?.supportedSpecies?.length > 0 ? (
+                                                            selectedVet.supportedSpecies.map((species) => (
+                                                                <option key={species} value={species}>{species}</option>
+                                                            ))
+                                                        ) : (
+                                                            // Fallback to category map if no specific species listed
+                                                            (categoryMap[selectedVet?.category] || ['Dog', 'Cat', 'Bird', 'Other']).map((type) => (
+                                                                <option key={type} value={type}>{type}</option>
+                                                            ))
+                                                        )}
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">

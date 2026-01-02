@@ -13,9 +13,11 @@ const appointmentSchema = mongoose.Schema({
     },
     pet: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
         ref: 'Pet',
     },
+    petName: String,
+    petSpecies: String,
     date: {
         type: Date,
         required: true,

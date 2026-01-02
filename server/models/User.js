@@ -23,6 +23,10 @@ const userSchema = mongoose.Schema(
             enum: ['Small Animal', 'Large Animal', 'Mixed', 'Exotic Animal', 'Other'],
             default: 'Small Animal'
         },
+        supportedSpecies: {
+            type: [String],
+            default: []
+        },
         experience: {
             type: Number,
             default: 0,
