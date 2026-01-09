@@ -25,11 +25,23 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const result = await register(formData);
-        if (result.success) {
-            navigate('/dashboard');
-        } else {
-            setError(result.message);
+        console.log("Submitting registration:", formData);
+
+        try {
+            const result = await register(formData);
+            console.log("Registration result:", result);
+
+            if (result.success) {
+                alert("Registration Successful!");
+                navigate('/dashboard');
+            } else {
+                console.error("Registration error:", result.message);
+                setError(result.message);
+                alert(`Registration Failed: ${result.message}`);
+            }
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            alert(`Unexpected error: ${err.message}`);
         }
     };
 
@@ -41,8 +53,13 @@ const Register = () => {
 
             <div className="max-w-md w-full relative z-10">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/50 backdrop-blur-md rounded-full text-primary-700 font-semibold mb-4 shadow-sm">
-                        <FaStar className="text-accent-500" /> Join Us Today
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <span className="w-8 h-[2px] bg-gradient-to-r from-transparent to-accent-500"></span>
+                        <div className="flex items-center gap-2 text-primary-600">
+                            <FaStar className="text-accent-500 animate-pulse" />
+                            <span className="text-sm font-bold tracking-widest uppercase">Join Us Today</span>
+                        </div>
+                        <span className="w-8 h-[2px] bg-gradient-to-l from-transparent to-accent-500"></span>
                     </div>
                     <h2 className="text-4xl font-display font-bold text-neutral-900 mb-2">Create Account</h2>
                     <p className="text-neutral-600 text-lg">Start your pet care journey</p>
@@ -161,6 +178,22 @@ const Register = () => {
                                                 placeholder="e.g. Surgeon, General Practitioner"
                                                 required={formData.role === 'vet'}
                                             />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-neutral-700 font-bold mb-2 text-sm">Vet Category</label>
+                                            <select
+                                                name="vetCategory"
+                                                value={formData.vetCategory}
+                                                onChange={handleChange}
+                                                className="w-full bg-white border border-secondary-200 text-neutral-800 px-4 py-3 rounded-xl focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-all"
+                                            >
+                                                <option value="Small Animal">Small Animal</option>
+                                                <option value="Large Animal">Large Animal</option>
+                                                <option value="Mixed">Mixed</option>
+                                                <option value="Exotic Animal">Exotic Animal</option>
+                                                <option value="Other">Other</option>
+                                            </select>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">

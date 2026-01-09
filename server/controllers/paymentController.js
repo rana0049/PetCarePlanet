@@ -7,7 +7,7 @@ const paymentController = {
     submitPayment: async (req, res) => {
         try {
             const { amount, paymentMethod, transactionReference, type, relatedListing, screenshotUrl, packageType } = req.body;
-            const userId = req.user.userId; // Provided by auth middleware
+            const userId = req.user._id; // Provided by auth middleware
 
             if (type === 'feature_listing') {
                 const listing = await Listing.findById(relatedListing);
@@ -36,7 +36,7 @@ const paymentController = {
             res.status(201).json({ message: 'Payment submitted successfully! Waiting for admin approval.', transaction });
         } catch (error) {
             console.error('Payment Submission Error:', error);
-            res.status(500).json({ message: 'Error submitting payment.' });
+            res.status(500).json({ message: 'Error submitting payment.', error: error.message });
         }
     },
 

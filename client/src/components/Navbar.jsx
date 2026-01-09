@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaPaw, FaUserCircle, FaChevronDown } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
@@ -121,14 +121,24 @@ const Navbar = () => {
     );
 };
 
-const NavLink = ({ to, children }) => (
-    <Link
-        to={to}
-        className="text-neutral-600 hover:text-primary-600 font-medium transition-colors text-sm relative group"
-    >
-        {children}
-        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300 rounded-full"></span>
-    </Link>
-);
+const NavLink = ({ to, children }) => {
+    const location = useLocation();
+    const isActive = location.pathname === to ||
+        (to !== '/' && location.pathname.startsWith(to));
+
+    return (
+        <Link
+            to={to}
+            className={`font-medium transition-colors text-sm relative group ${isActive
+                    ? 'text-primary-600'
+                    : 'text-neutral-600 hover:text-primary-600'
+                }`}
+        >
+            {children}
+            <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary-500 transition-all duration-300 rounded-full ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
+        </Link>
+    );
+};
 
 export default Navbar;

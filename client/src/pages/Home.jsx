@@ -18,7 +18,7 @@ const Home = () => {
                         alt="Happy pets in nature"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-secondary-50/50 via-secondary-50/30 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-secondary-50/30 via-secondary-50/15 to-transparent"></div>
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10 pt-20">
@@ -28,9 +28,12 @@ const Home = () => {
                         transition={{ duration: 0.8 }}
                         className="max-w-2xl"
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-primary-700 font-semibold text-sm shadow-sm mb-6">
-                            <FaPaw className="text-primary-500" />
-                            <span>Where Pets are Family</span>
+                        <div className="flex flex-col items-start gap-3 mb-6">
+                            <div className="flex items-center gap-2 text-primary-700 drop-shadow-sm">
+                                <FaPaw className="text-xl animate-bounce" />
+                                <span className="text-base font-extrabold tracking-[0.2em] uppercase">Where Pets are Family</span>
+                            </div>
+                            <span className="w-16 h-1.5 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"></span>
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-display font-bold text-neutral-900 mb-6 leading-tight">

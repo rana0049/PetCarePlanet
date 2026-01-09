@@ -28,8 +28,13 @@ const Login = () => {
 
             <div className="max-w-md w-full relative z-10">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/50 backdrop-blur-md rounded-full text-primary-700 font-semibold mb-4 shadow-sm">
-                        <FaStar className="text-accent-500" /> Welcome Back
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <span className="w-8 h-[2px] bg-gradient-to-r from-transparent to-accent-500"></span>
+                        <div className="flex items-center gap-2 text-primary-600">
+                            <FaStar className="text-accent-500 animate-pulse" />
+                            <span className="text-sm font-bold tracking-widest uppercase">Welcome Back</span>
+                        </div>
+                        <span className="w-8 h-[2px] bg-gradient-to-l from-transparent to-accent-500"></span>
                     </div>
                     <h2 className="text-4xl font-display font-bold text-neutral-900 mb-2">Sign In</h2>
                     <p className="text-neutral-600 text-lg">Access your pet care dashboard</p>

@@ -11,7 +11,7 @@ const PageHero = ({ title, subtitle, image, children, height = "min-h-[60vh]" })
                     className="w-full h-full object-cover"
                 />
                 <div
-                    className="absolute inset-0 bg-gradient-to-r from-secondary-50/50 via-secondary-50/30 to-secondary-50/5"
+                    className="absolute inset-0 bg-gradient-to-r from-secondary-50/30 via-secondary-50/15 to-secondary-50/5"
                 ></div>
             </div>
 

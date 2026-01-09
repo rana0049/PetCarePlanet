@@ -216,12 +216,21 @@ const Vets = () => {
                 </div>
 
                 {/* Trust Signals */}
-                <div className="flex flex-wrap justify-center gap-4 text-neutral-600 font-medium text-sm">
-                    <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm border border-secondary-200 shadow-sm">
-                        <FaCheckCircle className="text-primary-500" /> <span>Certified Vets</span>
+                <div className="flex flex-wrap justify-center items-start gap-8 md:gap-12 text-neutral-600 mb-8">
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <FaCheckCircle className="text-primary-500" />
+                            <span className="font-extrabold tracking-widest uppercase text-xs text-primary-700">Certified Vets</span>
+                        </div>
+                        <span className="w-8 h-1 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"></span>
                     </div>
-                    <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm border border-secondary-200 shadow-sm">
-                        <FaShieldAlt className="text-primary-500" /> <span>Verified Clinics</span>
+
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <FaShieldAlt className="text-primary-500" />
+                            <span className="font-extrabold tracking-widest uppercase text-xs text-primary-700">Verified Clinics</span>
+                        </div>
+                        <span className="w-8 h-1 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"></span>
                     </div>
                 </div>
             </PageHero>

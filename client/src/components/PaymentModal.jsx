@@ -38,7 +38,12 @@ const PaymentModal = ({ isOpen, onClose, type, amount: initialAmount, relatedId,
         setError('');
 
         try {
-            const token = localStorage.getItem('token');
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const token = userInfo?.token;
+
+            if (!token) {
+                throw new Error('Not authorized. Please log in again.');
+            }
             const payload = {
                 amount: currentAmount,
                 paymentMethod: method,

@@ -144,15 +144,29 @@ const SearchHero = () => {
             </div>
 
             {/* Trust Signals */}
-            <div className="mb-8 flex flex-wrap justify-center gap-4 md:gap-8 text-neutral-600 font-medium text-sm md:text-base">
-                <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm border border-secondary-200 shadow-sm">
-                    <FaCheckCircle className="text-primary-500" /> <span>Verified Listings</span>
+            <div className="mb-8 flex flex-wrap justify-center items-start gap-8 md:gap-12 text-neutral-600">
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <FaCheckCircle className="text-primary-500" />
+                        <span className="font-extrabold tracking-widest uppercase text-xs text-primary-700">Verified Listings</span>
+                    </div>
+                    <span className="w-8 h-1 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"></span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm border border-secondary-200 shadow-sm">
-                    <FaShieldAlt className="text-primary-500" /> <span>Safe & Secure</span>
+
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <FaShieldAlt className="text-primary-500" />
+                        <span className="font-extrabold tracking-widest uppercase text-xs text-primary-700">Safe & Secure</span>
+                    </div>
+                    <span className="w-8 h-1 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"></span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full backdrop-blur-sm border border-secondary-200 shadow-sm">
-                    <FaUserCheck className="text-primary-500" /> <span>Trusted Sellers</span>
+
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <FaUserCheck className="text-primary-500" />
+                        <span className="font-extrabold tracking-widest uppercase text-xs text-primary-700">Trusted Sellers</span>
+                    </div>
+                    <span className="w-8 h-1 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"></span>
                 </div>
             </div>
 
