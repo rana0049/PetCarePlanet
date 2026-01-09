@@ -244,13 +244,29 @@ const Vets = () => {
                             className="bg-white border border-secondary-100 p-6 rounded-3xl shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 group flex flex-col"
                         >
                             <div className="flex items-start space-x-4 mb-6">
-                                <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 border-2 border-primary-100 group-hover:border-primary-300 transition-colors relative">
-                                    <img
-                                        src={vet.image}
-                                        alt={vet.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    />
-                                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm text-white text-[10px] py-1 text-center font-medium">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 border-2 border-primary-100 group-hover:border-primary-300 transition-colors relative bg-secondary-100 flex items-center justify-center">
+                                    {vet.image && vet.image !== 'https://via.placeholder.com/300' ? (
+                                        <img
+                                            src={vet.image}
+                                            alt={vet.name}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'flex';
+                                            }}
+                                        />
+                                    ) : null}
+
+                                    {/* Fallback for when image is missing or errors out */}
+                                    <div
+                                        className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200 text-primary-600 font-bold text-3xl uppercase"
+                                        style={{ display: vet.image && vet.image !== 'https://via.placeholder.com/300' ? 'none' : 'flex' }}
+                                    >
+                                        {vet.name.charAt(0)}
+                                    </div>
+
+                                    {/* Experience Overlay - keep this always visible on top */}
+                                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm text-white text-[10px] py-1 text-center font-medium z-10">
                                         {vet.experience} Years Exp.
                                     </div>
                                 </div>
