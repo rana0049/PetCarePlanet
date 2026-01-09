@@ -11,6 +11,7 @@ const EditProfileModal = ({ isOpen, onClose, onSuccess }) => {
         specialization: '',
         vetCategory: 'Small Animal',
         experience: '',
+        fee: '',
         clinicAddress: ''
     });
     const [loading, setLoading] = useState(false);
@@ -22,6 +23,7 @@ const EditProfileModal = ({ isOpen, onClose, onSuccess }) => {
                 specialization: user.specialization || '',
                 vetCategory: user.vetCategory || 'Small Animal',
                 experience: user.experience || '',
+                fee: user.fee || '',
                 clinicAddress: user.clinicAddress || ''
             });
         }
@@ -110,6 +112,16 @@ const EditProfileModal = ({ isOpen, onClose, onSuccess }) => {
                             value={formData.experience}
                             onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                             className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-neutral-700 font-semibold mb-2 text-sm">Consultation Fee (Rs.)</label>
+                        <input
+                            type="number"
+                            value={formData.fee}
+                            onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                            className="w-full bg-secondary-50 border border-secondary-200 text-neutral-800 p-3 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                            placeholder="e.g. 1000"
                         />
                     </div>
 

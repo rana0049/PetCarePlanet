@@ -31,6 +31,10 @@ const userSchema = mongoose.Schema(
             type: Number,
             default: 0,
         },
+        fee: {
+            type: Number,
+            default: 1000,
+        },
         clinicAddress: String,
         isApproved: {
             type: Boolean,

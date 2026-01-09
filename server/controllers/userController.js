@@ -31,6 +31,7 @@ const updateUserProfile = async (req, res) => {
                 user.experience = req.body.experience || user.experience;
                 user.clinicAddress = req.body.clinicAddress || user.clinicAddress;
                 user.vetCategory = req.body.vetCategory || user.vetCategory;
+                user.fee = req.body.fee || user.fee;
             }
 
             if (req.body.password) {
@@ -47,6 +48,7 @@ const updateUserProfile = async (req, res) => {
                 specialization: updatedUser.specialization,
                 vetCategory: updatedUser.vetCategory,
                 experience: updatedUser.experience,
+                fee: updatedUser.fee,
                 clinicAddress: updatedUser.clinicAddress,
                 token: req.body.token // Keep existing token or generate new one if needed (usually just keep existing on client)
             });
