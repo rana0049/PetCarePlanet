@@ -27,6 +27,9 @@ const transactionSchema = mongoose.Schema({
     screenshotUrl: {
         type: String,
     },
+    stripePaymentIntentId: {
+        type: String,
+    },
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],

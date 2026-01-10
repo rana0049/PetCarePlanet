@@ -51,6 +51,8 @@ const userSchema = mongoose.Schema(
         subscriptionExpiresAt: {
             type: Date,
         },
+        stripeCustomerId: { type: String },
+        stripeSubscriptionId: { type: String },
         // Password reset fields
         resetPasswordToken: String,
         resetPasswordExpire: Date,

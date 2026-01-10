@@ -1,6 +1,7 @@
 const Transaction = require('../models/Transaction');
 const Listing = require('../models/Listing');
 const User = require('../models/User');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const paymentController = {
     // User submits a payment for verification
@@ -106,6 +107,87 @@ const paymentController = {
         } catch (error) {
             console.error('Approval Error:', error);
             res.status(500).json({ message: 'Error approving transaction.' });
+        }
+    },
+
+    // Stripe: Create Payment Intent
+    createPaymentIntent: async (req, res) => {
+        try {
+            const { amount, currency = 'pkr' } = req.body;
+
+            // Create a PaymentIntent with the order amount and currency
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount * 100, // Stripe expects amount in cents/lowest unit
+                currency: currency,
+                automatic_payment_methods: {
+                    enabled: true,
+                },
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        } catch (error) {
+            console.error('Stripe Intent Error:', error);
+            res.status(500).json({ message: error.message });
+        }
+    },
+
+    // Stripe: Confirm and Record Payment
+    confirmStripePayment: async (req, res) => {
+        try {
+            const { paymentIntentId, type, relatedListing, packageType } = req.body;
+            const userId = req.user._id;
+
+            // Verify with Stripe
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+            if (paymentIntent.status !== 'succeeded') {
+                return res.status(400).json({ message: 'Payment not successful' });
+            }
+
+            // Check if transaction already recorded to avoid duplicates
+            const existingTx = await Transaction.findOne({ stripePaymentIntentId: paymentIntentId });
+            if (existingTx) {
+                return res.status(200).json({ message: 'Transaction already recorded', transaction: existingTx });
+            }
+
+            // Create Transaction Record
+            const transaction = new Transaction({
+                user: userId,
+                amount: paymentIntent.amount / 100,
+                paymentMethod: 'stripe',
+                transactionReference: paymentIntentId,
+                stripePaymentIntentId: paymentIntentId,
+                type,
+                packageType: type === 'feature_listing' ? (packageType || 'weekly') : undefined,
+                relatedListing: type === 'feature_listing' ? relatedListing : undefined,
+                status: 'approved' // Auto-approve Stripe payments
+            });
+
+            await transaction.save();
+
+            // Apply Benefits Immediately
+            if (type === 'feature_listing') {
+                const listing = await Listing.findById(relatedListing);
+                if (listing) {
+                    listing.isFeatured = true;
+                    const expiresAt = new Date();
+
+                    // Add days based on package
+                    const daysToAdd = packageType === 'monthly' ? 30 : (packageType === 'biweekly' ? 14 : 7);
+                    expiresAt.setDate(expiresAt.getDate() + daysToAdd);
+
+                    listing.featuredExpiresAt = expiresAt;
+                    await listing.save();
+                }
+            }
+
+            res.status(200).json({ message: 'Payment successful and benefits applied!', transaction });
+
+        } catch (error) {
+            console.error('Stripe Confirmation Error:', error);
+            res.status(500).json({ message: error.message });
         }
     },
 
