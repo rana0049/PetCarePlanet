@@ -16,12 +16,10 @@ const userSchema = mongoose.Schema(
         // For Vets
         specialization: {
             type: String,
-            default: 'General Vet',
         },
         vetCategory: {
             type: String,
             enum: ['Small Animal', 'Large Animal', 'Mixed', 'Exotic Animal', 'Other'],
-            default: 'Small Animal'
         },
         supportedSpecies: {
             type: [String],
@@ -29,11 +27,9 @@ const userSchema = mongoose.Schema(
         },
         experience: {
             type: Number,
-            default: 0,
         },
         fee: {
             type: Number,
-            default: 1000,
         },
         clinicAddress: String,
         isApproved: {

@@ -20,17 +20,26 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        const user = await User.create({
+        let userData = {
             name,
             email,
             phone,
             password,
             role,
-            specialization,
-            experience,
-            clinicAddress,
-            vetCategory: req.body.vetCategory,
-        });
+        };
+
+        if (role === 'vet') {
+            userData = {
+                ...userData,
+                specialization,
+                experience,
+                clinicAddress,
+                vetCategory: req.body.vetCategory,
+                fee: req.body.fee || 1000,
+            };
+        }
+
+        const user = await User.create(userData);
 
         if (user) {
             res.status(201).json({

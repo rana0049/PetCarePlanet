@@ -84,6 +84,9 @@ const approveVet = async (req, res) => {
 // @desc    Reject a vet
 // @route   PUT /api/admin/vets/:id/reject
 // @access  Private/Admin
+// @desc    Reject a vet
+// @route   PUT /api/admin/vets/:id/reject
+// @access  Private/Admin
 const rejectVet = async (req, res) => {
     try {
         const vet = await User.findById(req.params.id);
@@ -96,10 +99,17 @@ const rejectVet = async (req, res) => {
             return res.status(400).json({ message: 'User is not a vet' });
         }
 
+        // If the vet is not yet approved (pending), we delete the application completely
+        if (!vet.isApproved) {
+            await User.findByIdAndDelete(req.params.id);
+            return res.json({ message: 'Vet application rejected and removed', vetId: req.params.id });
+        }
+
+        // If the vet was already approved, we just revoke the approval status
         vet.isApproved = false;
         await vet.save();
 
-        res.json({ message: 'Vet rejected successfully', vet });
+        res.json({ message: 'Vet approval revoked', vet });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

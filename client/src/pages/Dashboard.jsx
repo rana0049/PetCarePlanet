@@ -76,11 +76,22 @@ const Dashboard = () => {
 
             // alert('Debug: PUT success');
 
-            // Update local state - Remove the deleted appointment entirely
-            setAppointments(prev => prev.filter(appt => appt._id !== appointmentId));
+            // Update local state
+            // If it was a 'delete' operation (for owners cancelling), the backend returns { message, _id, status: 'cancelled' } usually or we deleted it.
+            // But for Vets updating status, we want to see the new status.
 
-            alert('Appointment removed successfully.');
-            alert(`Appointment ${status} successfully!`);
+            // Check if we should remove or update
+            if (status === 'cancelled' && user.role === 'pet_owner') {
+                // Owners delete appointments in current logic
+                setAppointments(prev => prev.filter(appt => appt._id !== appointmentId));
+                alert('Appointment removed successfully.');
+            } else {
+                // For Vets (or status updates that aren't deletions)
+                setAppointments(prev => prev.map(appt =>
+                    appt._id === appointmentId ? { ...appt, status: status } : appt
+                ));
+                alert(`Appointment ${status} successfully!`);
+            }
         } catch (error) {
             console.error(error);
             const errMsg = error.response?.data?.message || 'Failed to update appointment status';
